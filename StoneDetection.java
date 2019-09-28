@@ -3,8 +3,11 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
+
+import java.lang.annotation.Target;
 import java.util.List;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
@@ -15,10 +18,12 @@ import org.firstinspires.ftc.robotcore.external.tfod.TfodSkyStone;
 @Autonomous(name = "SeekSkyStone (Blocks to Java)", group = "")
 public class StoneDetection extends LinearOpMode {
 
-    private DcMotor LeftMotor;
     private VuforiaSkyStone vuforiaSkyStone;
     private TfodSkyStone tfodSkyStone;
-    private DcMotor RightMotor;
+    private DcMotor leftFront = null;
+    private DcMotor rightFront = null;
+    private DcMotor leftRear = null;
+    private DcMotor rightRear = null;
 
     /**
      * This function is executed when this Op Mode is selected from the Driver Station.
@@ -30,21 +35,21 @@ public class StoneDetection extends LinearOpMode {
         float ObjectHeight;
         double ObjectAngle;
         double ObjectHeightRatio;
-        double LeftPower;
-        double RightPower;
         double SkystoneCount;
         boolean SkystoneFound;
         double TargetHeightRatio;
-
-        LeftMotor = hardwareMap.dcMotor.get("LeftMotor ");
+        int adjustments = 0;
+        leftFront = hardwareMap.get(DcMotor.class, "left_front");
+        rightFront = hardwareMap.get(DcMotor.class, "right_front");
+        leftRear = hardwareMap.get(DcMotor.class, "left_rear");
+        rightRear = hardwareMap.get(DcMotor.class, "right_rear");
         vuforiaSkyStone = new VuforiaSkyStone();
         tfodSkyStone = new TfodSkyStone();
-        RightMotor = hardwareMap.dcMotor.get("RightMotor ");
-
-        // Initialization
+        stopEncoders();
         telemetry.addData("Init ", "started");
         telemetry.update();
-        LeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftRear.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
         // Init Vuforia because Tensor Flow needs it.
         vuforiaSkyStone.initialize(
                 "", // vuforiaLicenseKey
@@ -98,15 +103,23 @@ public class StoneDetection extends LinearOpMode {
                         telemetry.addData("Estimated Angle", ObjectAngle);
                         if (ObjectAngle > 0) {
                             telemetry.addData("Direction", "Right");
+                            while (ObjectAngle < -25 || ObjectAngle > 25) {
+                                rightRear.setPower(.5);
+                                rightFront.setPower(-.5);
+                                leftFront.setPower(.5);
+                                leftRear.setPower(-.5);
+                            }
+
                         } else {
                             telemetry.addData("Direction", "Left");
+
+                            while (ObjectAngle < -25 || ObjectAngle > 25) {
+                                rightRear.setPower(-.5);
+                                rightFront.setPower(.5);
+                                leftFront.setPower(-.5);
+                                leftRear.setPower(.5);
+                            }
                         }
-                        // Calculate power levels for turn toward Skystone.
-                        LeftPower = 0.25 * (ObjectAngle / 45);
-                        RightPower = -0.25 * (ObjectAngle / 45);
-                        // We'll be comparing the Skystone height
-                        // to the height of the video image to estimate
-                        // how close the robot is to the Skystone.
                         ImageHeight = recognition.getImageHeight();
                         ObjectHeight = recognition.getHeight();
                         // Calculate height of Skystone relative to image height.
@@ -115,91 +128,104 @@ public class StoneDetection extends LinearOpMode {
                         telemetry.addData("HeightRatio", ObjectHeightRatio);
                         // Use height ratio to determine distance.
                         // If height ratio larger than (target - tolerance)...
-                        if (ObjectHeightRatio < TargetHeightRatio - 0.05) {
+                        if (ObjectHeightRatio < TargetHeightRatio - 0.08) {
                             // ...not close enough yet.
                             telemetry.addData("Distance", "Not close enough");
                             // If sum of turn powers are small
-                            if (Math.abs(LeftPower) + Math.abs(RightPower) < 0.2) {
-                                // ...don't really need to turn.  Move forward.
-                                telemetry.addData("Action", "Forward");
-                                // Go forward by setting power proportional to how
-                                // far from target distance.
-                                LeftPower = 0.035 + 0.5 * ((TargetHeightRatio - 0.05) - ObjectHeightRatio);
-                                RightPower = LeftPower;
-                            } else {
-                                // Else we'll turn to Skystone with current power levels.
-                                telemetry.addData("Action", "Turn");
+                            while (ObjectHeightRatio < TargetHeightRatio - 0.08) {
+                                forward(.75);
+                                ImageHeight = recognition.getImageHeight();
+                                ObjectHeight = recognition.getHeight();
+                                // Calculate height of Skystone relative to image height.
+                                // Larger ratio means robot is closer to Skystone.
+                                ObjectHeightRatio = ObjectHeight / ImageHeight;
                             }
-                            // Else if height ratio more than (target+tolerance)...
-                        } else if (ObjectHeightRatio > TargetHeightRatio + 0.05) {
+                        }
+                        // Else if height ratio more than (target+tolerance)...
+                        else if (ObjectHeightRatio > TargetHeightRatio + 0.08) {
                             // ...robot too close to Skystone.
                             telemetry.addData("Distance", "Too close");
                             // If calculated turn power levels are small...
-                            if (Math.abs(LeftPower) + Math.abs(RightPower) < 0.12) {
-                                // ...don't need to turn.  Backup instead by setting
-                                // power proportional to how far past target ratio
-                                telemetry.addData("Action", "Back up");
-                                LeftPower = -0.05 + -0.5 * ((TargetHeightRatio + 0.05) - TargetHeightRatio);
-                                RightPower = LeftPower;
-                            } else {
-                                // Else use current power levels to turn to Skystone
-                                telemetry.addData("Action", "Turn");
-                            }
-                        } else {
-                            // Skystone is about one neck length away.
-                            telemetry.addData("Distance", "Correct");
-                            // If calculated turn power levels are small...
-                            if (Math.abs(LeftPower) + Math.abs(RightPower) < 0.12) {
-                                // ...robot is centered on the Skystone.
-                                telemetry.addData("Action", "Motors off, hit the Skystone");
-                                // Turn motors off by setting power to 0.
-                                LeftPower = 0;
-                                RightPower = 0;
-                                // Lower neck and open jaw.
-                                SkystoneFound = true;
-                            } else {
-                                // Otherwise use current power levels to turn
-                                // to better center on gold.
-                                telemetry.addData("Action", "Turn");
+                            while (ObjectHeightRatio > TargetHeightRatio - 0.08) {
+                                forward(-.75);
+                                ImageHeight = recognition.getImageHeight();
+                                ObjectHeight = recognition.getHeight();
+                                // Calculate height of Skystone relative to image height.
+                                // Larger ratio means robot is closer to Skystone.
+                                ObjectHeightRatio = ObjectHeight / ImageHeight;
                             }
                         }
-                        telemetry.addData("Left Power", LeftPower);
-                        telemetry.addData("Right Power", RightPower);
-                        // Set power levels to get closer to Skystone.
-                        LeftMotor.setPower(LeftPower);
-                        RightMotor.setPower(RightPower);
-                        // We've found a Skystone so we don't have
-                        // to look at rest of detected objects.
-                        // Break out of For-each-recognition.
-                        break;
+                        if (ObjectHeightRatio > (TargetHeightRatio - .08) && ObjectHeightRatio < TargetHeightRatio + .08) {
+                            SkystoneFound = true;
+                            telemetry.addData("done", "skystonedetected");
+                        }
+
                     }
                 }
+
+
                 // If no Skystones detected...
                 if (SkystoneCount == 0) {
                     telemetry.addData("Status", "No Skystone");
                     telemetry.addData("Action", "Back up");
                     // Back up slowly hoping to bring Skystone in view.
-                    LeftMotor.setPower(-0.1);
-                    RightMotor.setPower(-0.1);
+                    forward(-0.1);
+                } else {
+                    // No objects detected
+                    telemetry.addData("Status", "No objects detected");
+                    telemetry.addData("Action", "Back up");
+                    // Back up slowly hoping to bring objects in view.
+                    forward(-0.1);
+
                 }
-            } else {
-                // No objects detected
-                telemetry.addData("Status", "No objects detected");
-                telemetry.addData("Action", "Back up");
-                // Back up slowly hoping to bring objects in view.
-                LeftMotor.setPower(-0.1);
-                RightMotor.setPower(-0.1);
             }
             telemetry.update();
-        }
-        // Skystone found, time is up or stop was requested.
-        tfodSkyStone.deactivate();
-        LeftMotor.setPower(0);
-        RightMotor.setPower(0);
-        // Pause to let driver station to see last telemetry.
-        sleep(2000);
 
-        vuforiaSkyStone.close();
-        tfodSkyStone.close();
+            // Skystone found, time is up or stop was requested.
+            tfodSkyStone.deactivate();
+
+
+            vuforiaSkyStone.close();
+            tfodSkyStone.close();
+        }
     }
+        public void stopEncoders ()
+        {
+            leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            leftRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            rightRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        }
+
+        public void startEncoders () {
+            leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            leftRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            ;
+            rightRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        }
+
+        public void forward ( double power){
+            leftFront.setPower(power);
+            leftRear.setPower(power);
+            rightFront.setPower(power);
+            rightRear.setPower(power);
+        }
+
+        public void setPosition ( int pos){
+            leftFront.setTargetPosition(pos);
+            leftRear.setTargetPosition(pos);
+            rightFront.setTargetPosition(pos);
+            rightRear.setTargetPosition(pos);
+
+            leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            leftRear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            rightRear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            while (leftRear.isBusy() && rightRear.isBusy() && leftFront.isBusy() && rightFront.isBusy()) {
+            }
+        }
+
+
+
 }

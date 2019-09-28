@@ -56,8 +56,10 @@ public class BasicOpMode_Linear extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
-    private DcMotor leftDrive = null;
-    private DcMotor rightDrive = null;
+    private DcMotor leftFront = null;
+    private DcMotor rightFront = null;
+    private DcMotor leftRear = null;
+    private DcMotor rightRear = null;
     private boolean start = false;
 
     @Override
@@ -68,13 +70,12 @@ public class BasicOpMode_Linear extends LinearOpMode {
         // Initialize the hardware variables. Note that the strings used here as parameters
         // to 'get' must correspond to the names assigned during the robot configuration
         // step (using the FTC Robot Controller app on the phone).
-        leftDrive  = hardwareMap.get(DcMotor.class, "left_drive");
-        rightDrive = hardwareMap.get(DcMotor.class, "right_drive");
+        leftFront = hardwareMap.get(DcMotor.class, "left_front");
+        rightFront = hardwareMap.get(DcMotor.class, "right_front");
+        leftRear  = hardwareMap.get(DcMotor.class, "left_rear");
+        rightRear = hardwareMap.get(DcMotor.class, "right_rear");
 
-        // Most robots need the motor on one side to be reversed to drive forward
-        // Reverse the motor that runs backwards when connected directly to the battery
-        leftDrive.setDirection(DcMotor.Direction.FORWARD);
-        rightDrive.setDirection(DcMotor.Direction.REVERSE);
+
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
@@ -88,33 +89,20 @@ public class BasicOpMode_Linear extends LinearOpMode {
 
             }
             if (start)
-            {
-                // Setup a variable for each drive wheel to save power level for telemetry
-                double leftPower;
-                double rightPower;
+            {double r = Math.hypot(gamepad1.left_stick_x, gamepad1.left_stick_y);
+                double robotAngle = Math.atan2(gamepad1.left_stick_y, gamepad1.left_stick_x) - Math.PI / 4;
+                double rightX = gamepad1.right_stick_x;
+                final double v1 = r * Math.cos(robotAngle) + rightX;
+                final double v2 = r * Math.sin(robotAngle) - rightX;
+                final double v3 = r * Math.sin(robotAngle) + rightX;
+                final double v4 = r * Math.cos(robotAngle) - rightX;
 
-                // Choose to drive using either Tank Mode, or POV Mode
-                // Comment out the method that's not used.  The default below is POV.
-
-                // POV Mode uses left stick to go forward, and right stick to turn.
-                // - This uses basic math to combine motions and is easier to drive straight.
-                double drive = -gamepad1.left_stick_y;
-                double turn = gamepad1.left_stick_x;
-                leftPower = Range.clip(drive + turn, -1.0, 1.0);
-                rightPower = Range.clip(drive - turn, -1.0, 1.0);
-
-                // Tank Mode uses one stick to control each wheel.
-                // - This requires no math, but it is hard to drive forward slowly and keep straight.
-                // leftPower  = -gamepad1.left_stick_y ;
-                // rightPower = -gamepad1.right_stick_y ;
-
-                // Send calculated power to wheels
-                leftDrive.setPower(leftPower);
-                rightDrive.setPower(rightPower);
-
+                leftFront.setPower(v1);
+                rightFront.setPower(v2);
+                leftRear.setPower(v3);
+                rightRear.setPower(v4);
                 // Show the elapsed game time and wheel power.
                 telemetry.addData("Status", "Run Time: " + runtime.toString());
-                telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);
                 telemetry.update();
             }
         }

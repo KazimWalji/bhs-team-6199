@@ -29,17 +29,17 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import android.content.Context;
-
-import com.qualcomm.ftccommon.SoundPlayer;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
+
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaSkyStone;
+import org.firstinspires.ftc.robotcore.external.tfod.TfodSkyStone;
 
 
 /**
@@ -55,9 +55,9 @@ import com.qualcomm.robotcore.util.Range;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Basic: Linear OpMode", group="Linear Opmode")
-//@Disabled
-public class BasicOpMode_Linear extends LinearOpMode {
+@Autonomous(name="Encoders Test", group="Linear Opmode")
+
+public class encodersTest extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
@@ -65,64 +65,103 @@ public class BasicOpMode_Linear extends LinearOpMode {
     private DcMotor rightFront = null;
     private DcMotor leftRear = null;
     private DcMotor rightRear = null;
-   private Servo armServo = null;
-
     @Override
     public void runOpMode() {
-       double x = .5;
-                // Initialize the hardware variables. Note that the strings used here as parameters
-        // to 'get' must correspond to the names assigned during the robot configuration
-        // step (using the FTC Robot Controller app on the phone).
+        telemetry.addData("Status", "Initialized");
+        telemetry.update();
+
+
         leftFront = hardwareMap.get(DcMotor.class, "left_front");
         rightFront = hardwareMap.get(DcMotor.class, "right_front");
-        leftRear  = hardwareMap.get(DcMotor.class, "left_rear");
+        leftRear = hardwareMap.get(DcMotor.class, "left_rear");
         rightRear = hardwareMap.get(DcMotor.class, "right_rear");
         leftRear.setDirection(DcMotorSimple.Direction.REVERSE);
         leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
-        armServo = hardwareMap.get(Servo.class, "servo_arm");
-
+        stopEncoders();
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
-        armServo.setPosition(x);
         runtime.reset();
-        // Look for DPAD presses to change the selection
+        leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightRear.setMode((DcMotor.RunMode.STOP_AND_RESET_ENCODER));
 
 
+        leftFront.setTargetPosition(700);
+        rightFront.setTargetPosition(700);
+        leftRear.setTargetPosition(700);
+        rightRear.setTargetPosition(700);
+        leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftRear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightRear.setMode((DcMotor.RunMode.RUN_TO_POSITION));
+        leftFront.setPower(.1);
+        rightFront.setPower(.1);
+        rightRear.setPower(.1);
+        leftRear.setPower(.1);
+        while(leftFront.isBusy() || rightRear.isBusy() || leftRear.isBusy() || rightFront.isBusy() && opModeIsActive())
+        {
+            telemetry.addData("Encoders", "Running");
+        }
 
+        leftFront.setPower(0);
+        rightFront.setPower(0);
+        rightRear.setPower(0);
+        leftRear.setPower(0);
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
 
 
-                if(gamepad1.a)
-                {
-                    if(x == .5)
-                    {
-                        x = .75;
-                    }
-                    else
-                    {
-                      x = .5;
-                    }
-                    telemetry.addData("servoPos:", armServo.getPosition());
-                    armServo.setPosition(x);
-                }
-
-                double r = Math.hypot(-gamepad1.left_stick_x, gamepad1.left_stick_y);
-                double robotAngle = Math.atan2(gamepad1.left_stick_y, -gamepad1.left_stick_x) - Math.PI / 4;
-                double rightX = (gamepad1.right_stick_x *.9) ;
-                final double v1 = r * Math.cos(robotAngle) + rightX;
-                final double v2 = r * Math.sin(robotAngle) - rightX;
-                final double v3 = r * Math.sin(robotAngle) + rightX;
-                final double v4 = r * Math.cos(robotAngle) - rightX;
-
-                leftFront.setPower(v1);
-                rightFront.setPower(v2);
-                leftRear.setPower(v3);
-                rightRear.setPower(v4);
-                // Show the elapsed game time and wheel power.
-                telemetry.addData("Status", "Run Time: " + runtime.toString());
-                telemetry.update();
-
         }
     }
+
+    public void stopEncoders()
+    {
+        leftRear.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightRear.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    }
+    public void resetEncoders ()
+    {
+        leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    }
+
+    public void startEncoders () {
+        leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        rightRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+
+    public void forward (double power){
+        leftFront.setPower(power);
+        leftRear.setPower(power);
+        rightFront.setPower(power);
+        rightRear.setPower(power);
+    }
+
+    public void setPosition ( int pos, double power){
+        leftFront.setTargetPosition(pos);
+        leftRear.setTargetPosition(pos);
+        rightFront.setTargetPosition(pos);
+        rightRear.setTargetPosition(pos);
+        leftFront.setPower(power);
+        leftRear.setPower(power);
+        rightFront.setPower(power);
+        rightRear.setPower(power);
+        leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftRear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightRear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        while (leftRear.isBusy() && rightRear.isBusy() && leftFront.isBusy() && rightFront.isBusy()) {
+        }
+    }
+
+
+
 }

@@ -35,6 +35,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
@@ -54,7 +55,7 @@ import java.util.List;
  * IMPORTANT: In order to use this OpMode, you need to obtain your own Vuforia license key as
  * is explained below.
  */
-@Autonomous(name = "Tester", group = "Concept")
+@Autonomous(name = "TesterWorks", group = "Concept")
 //@Disabled
 public class tester extends LinearOpMode {
     private static final String TFOD_MODEL_ASSET = "Skystone.tflite";
@@ -64,7 +65,7 @@ public class tester extends LinearOpMode {
     private DcMotor rightFront = null;
     private DcMotor leftRear = null;
     private DcMotor rightRear = null;
-
+    private Servo armServo = null;
     /*
      * IMPORTANT: You need to obtain your own license key to use Vuforia. The string below with which
      * 'parameters.vuforiaLicenseKey' is initialized is for illustration only, and will not function.
@@ -101,8 +102,11 @@ public class tester extends LinearOpMode {
         rightFront = hardwareMap.get(DcMotor.class, "right_front");
         leftRear = hardwareMap.get(DcMotor.class, "left_rear");
         rightRear = hardwareMap.get(DcMotor.class, "right_rear");
+        armServo = hardwareMap.get(Servo.class, "servo_arm");
         rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
         rightRear.setDirection(DcMotorSimple.Direction.REVERSE);
+
+
         if (ClassFactory.getInstance().canCreateTFObjectDetector()) {
             initTfod();
         } else {
@@ -121,6 +125,34 @@ public class tester extends LinearOpMode {
         telemetry.addData(">", "Press Play to start op mode");
         telemetry.update();
         waitForStart();
+        armServo.setPosition(.5);
+        leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightRear.setMode((DcMotor.RunMode.STOP_AND_RESET_ENCODER));
+
+
+        leftFront.setTargetPosition(700);
+        rightFront.setTargetPosition(700);
+        leftRear.setTargetPosition(700);
+        rightRear.setTargetPosition(700);
+        leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftRear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightRear.setMode((DcMotor.RunMode.RUN_TO_POSITION));
+        leftFront.setPower(.3);
+        rightFront.setPower(.3);
+        rightRear.setPower(.3);
+        leftRear.setPower(.3);
+        while(leftFront.isBusy() || rightRear.isBusy() || leftRear.isBusy() || rightFront.isBusy() && opModeIsActive())
+        {
+            telemetry.addData("Encoders", "Running");
+        }
+
+        leftFront.setPower(0);
+        rightFront.setPower(0);
+        rightRear.setPower(0);
+        leftRear.setPower(0);
 
         if (opModeIsActive()) {
             while (opModeIsActive()) {
@@ -151,12 +183,62 @@ public class tester extends LinearOpMode {
                             if (skyStone != -1 && stone != -1 && stone1 != -1) {
                                 if (skyStone < stone && skyStone < stone1) {
                                     telemetry.addData("Gold Mineral Position", "Left");
-                                    telemetry.addData("left pos", skyStone);
+                                    leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                                    rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                                    leftRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                                    rightRear.setMode((DcMotor.RunMode.STOP_AND_RESET_ENCODER));
+
+
+                                    rightFront.setTargetPosition(700);
+                                    leftRear.setTargetPosition(700);
+                                    leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                                    rightRear.setMode((DcMotor.RunMode.RUN_TO_POSITION));
+                                    leftFront.setPower(.3);
+                                    rightRear.setPower(.3);
+                                    while(leftFront.isBusy() && rightRear.isBusy()  && opModeIsActive())
+                                    {
+                                        telemetry.addData("Encoders", "Running");
+                                    }
+
+                                    leftFront.setPower(0);
+                                    rightFront.setPower(0);
+                                    rightRear.setPower(0);
+                                    leftRear.setPower(0);
+                                    armServo.setPosition(.75);
                                 }
                                 else if (skyStone > stone && skyStone > stone1) {
                                         telemetry.addData("Gold Mineral Position", "Right");
                                     telemetry.addData("left pos", skyStone);
-                                    } else {
+
+                                    leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                                    rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                                    leftRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                                    rightRear.setMode((DcMotor.RunMode.STOP_AND_RESET_ENCODER));
+
+
+                                    leftFront.setTargetPosition(700);
+                                    rightRear.setTargetPosition(700);
+                                    leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                                    rightRear.setMode((DcMotor.RunMode.RUN_TO_POSITION));
+                                    leftFront.setPower(.3);
+                                    rightRear.setPower(.3);
+                                    while(leftFront.isBusy() && rightRear.isBusy()  && opModeIsActive())
+                                    {
+                                        telemetry.addData("Encoders", "Running");
+                                    }
+
+                                    leftFront.setPower(0);
+                                    rightFront.setPower(0);
+                                    rightRear.setPower(0);
+                                    leftRear.setPower(0);
+                                    armServo.setPosition(.75);
+                                    }
+
+
+                                else
+
+
+                                    {
                                         telemetry.addData("Gold Mineral Position", "Center");
                                     telemetry.addData("left pos", skyStone);
                                         leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -173,11 +255,11 @@ public class tester extends LinearOpMode {
                                     rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                                     leftRear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                                     rightRear.setMode((DcMotor.RunMode.RUN_TO_POSITION));
-                                    leftFront.setPower(.1);
-                                   rightFront.setPower(.1);
-                                    rightRear.setPower(.1);
-                                    leftRear.setPower(.1);
-                                    while(leftFront.isBusy() || rightRear.isBusy() || leftRear.isBusy() || rightFront.isBusy() && opModeIsActive())
+                                    leftFront.setPower(.3);
+                                   rightFront.setPower(.3);
+                                    rightRear.setPower(.3);
+                                    leftRear.setPower(.3);
+                                    while(leftFront.isBusy() && rightRear.isBusy() && leftRear.isBusy() && rightFront.isBusy() && opModeIsActive())
                                     {
                                         telemetry.addData("Encoders", "Running");
                                     }
@@ -186,6 +268,7 @@ public class tester extends LinearOpMode {
                                     rightFront.setPower(0);
                                     rightRear.setPower(0);
                                     leftRear.setPower(0);
+                                    armServo.setPosition(.75);
                                     }
 
 

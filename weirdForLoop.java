@@ -68,6 +68,7 @@ public class weirdForLoop extends LinearOpMode {
     private ElapsedTime runTime = new ElapsedTime();// dont have to reset timer every time
     private ElapsedTime runTime2 = new ElapsedTime();
     private int x;
+    private int stoneCount = 0;
     /*
      * IMPORTANT: You need to obtain your own license key to use Vuforia. The string below with which
      * 'parameters.vuforiaLicenseKey' is initialized is for illustration only, and will not function.
@@ -182,6 +183,7 @@ public class weirdForLoop extends LinearOpMode {
                                 telemetry.addData("left pos", recognition.getLeft());
                                 telemetry.update();
                                 skyStone = (int) recognition.getLeft();
+                                stoneCount++;
                             }
                             else if (runTime2.seconds()>6)
                             {
@@ -189,8 +191,77 @@ public class weirdForLoop extends LinearOpMode {
                                     telemetry.addData("left pos", recognition.getLeft());
                                     telemetry.update();
                                     skyStone = (int) recognition.getLeft();
+                                    stoneCount++;
                                 }
                             }
+                        }
+
+
+                        if(stoneCount>2 && getRuntime()>24) //if we got 2 skystones or stones and we have less then 60 secods stop at red line
+                        {
+
+                            leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                            rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                            leftRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                            rightRear.setMode((DcMotor.RunMode.STOP_AND_RESET_ENCODER));
+
+                            leftFront.setTargetPosition(-870);
+                            rightFront.setTargetPosition(870);
+                            leftRear.setTargetPosition(-870);
+                            rightRear.setTargetPosition(870);
+                            leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                            rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                            leftRear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                            rightRear.setMode((DcMotor.RunMode.RUN_TO_POSITION));
+
+
+                            leftFront.setPower(.3);
+                            rightFront.setPower(.3);
+                            rightRear.setPower(.3);
+                            leftRear.setPower(.3);
+                            runTime.reset();
+                            while (leftFront.isBusy() && rightRear.isBusy() && leftRear.isBusy() && rightFront.isBusy() && opModeIsActive() && runTime.seconds() < 4) {
+                                telemetry.addData("Encoders", "Running");
+                                telemetry.update();
+                            }
+
+                            leftFront.setPower(0);
+                            rightFront.setPower(0);
+                            rightRear.setPower(0);
+                            leftRear.setPower(0);
+
+
+                            leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                            rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                            leftRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                            rightRear.setMode((DcMotor.RunMode.STOP_AND_RESET_ENCODER));
+
+
+                            leftFront.setTargetPosition(1000);
+                            rightFront.setTargetPosition(1000);
+                            leftRear.setTargetPosition(1000);
+                            rightRear.setTargetPosition(1000);
+                            leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                            rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                            leftRear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                            rightRear.setMode((DcMotor.RunMode.RUN_TO_POSITION));
+
+
+                            leftFront.setPower(.5);
+                            rightFront.setPower(.5);
+                            rightRear.setPower(.5);
+                            leftRear.setPower(.5);
+                            runTime.reset();
+                            while (leftFront.isBusy() && rightRear.isBusy() && leftRear.isBusy() && rightFront.isBusy() && opModeIsActive() && runTime.seconds() < 7) {
+                                telemetry.addData("Encoders", "Running");
+                                telemetry.update();
+                            }
+
+                            leftFront.setPower(0);
+                            rightFront.setPower(0);
+                            rightRear.setPower(0);
+                            leftRear.setPower(0);
+                            sleep(10000);
                         }
                         if (skyStone != -1) {
                             if (skyStone < 75) {

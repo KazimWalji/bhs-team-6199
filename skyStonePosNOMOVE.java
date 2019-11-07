@@ -65,7 +65,8 @@ public class skyStonePosNOMOVE extends LinearOpMode {
     private DcMotor leftRear = null;
     private DcMotor rightRear = null;
     private Servo armServo = null;
-    private ElapsedTime runTime = new ElapsedTime();
+    private ElapsedTime runTime = new ElapsedTime();// dont have to reset timer every time
+    private ElapsedTime runTime2 = new ElapsedTime();
     private int x;
     /*
      * IMPORTANT: You need to obtain your own license key to use Vuforia. The string below with which
@@ -111,7 +112,7 @@ public class skyStonePosNOMOVE extends LinearOpMode {
         if (ClassFactory.getInstance().canCreateTFObjectDetector()) {
             initTfod();
         } else {
-            telemetry.addData("Sorry!", "This device is not compatible with TFOD");
+            telemetry.addData("Sorry!", "This device is not compatible with TFOD");//prints it out on phone
         }
 
         /**
@@ -137,7 +138,7 @@ public class skyStonePosNOMOVE extends LinearOpMode {
                     rightRear.setMode((DcMotor.RunMode.STOP_AND_RESET_ENCODER));
 
 
-                    leftFront.setTargetPosition(500);
+                    leftFront.setTargetPosition(500);// about a foot
                     rightFront.setTargetPosition(500);
                     leftRear.setTargetPosition(500);
                     rightRear.setTargetPosition(500);
@@ -181,22 +182,26 @@ public class skyStonePosNOMOVE extends LinearOpMode {
                                     telemetry.addData("left pos", recognition.getLeft());
                                     telemetry.update();
                                     skyStone = (int) recognition.getLeft();
+
                                 }
                             }
                             if (skyStone != -1) {
                                 if (skyStone < 75) {
                                     telemetry.addData("Gold Mineral Position", "Left");
                                     telemetry.update();
+
+                                    //Strafes left
+
                                     leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                                     rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                                     leftRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                                     rightRear.setMode((DcMotor.RunMode.STOP_AND_RESET_ENCODER));
 
 
-                                    leftFront.setTargetPosition(-450);
-                                    rightFront.setTargetPosition(450);
-                                    leftRear.setTargetPosition(450);
-                                    rightRear.setTargetPosition(-450);
+                                    leftFront.setTargetPosition(-400);
+                                    rightFront.setTargetPosition(400);
+                                    leftRear.setTargetPosition(400);
+                                    rightRear.setTargetPosition(-400);
                                     leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                                     rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                                     leftRear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -217,6 +222,7 @@ public class skyStonePosNOMOVE extends LinearOpMode {
                                     rightRear.setPower(0);
                                     leftRear.setPower(0);
 
+                                    //goes forward to get the skystone
                                     leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                                     rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                                     leftRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -250,6 +256,9 @@ public class skyStonePosNOMOVE extends LinearOpMode {
 
                                     armServo.setPosition(.75);
 
+                                    //arm is down, and goes backward to get the stone
+
+
                                     leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                                     rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                                     leftRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -278,16 +287,120 @@ public class skyStonePosNOMOVE extends LinearOpMode {
                                     rightRear.setPower(0);
                                     leftRear.setPower(0);
 
+                                    //rotate's 90 degrees
+
                                     leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                                     rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                                     leftRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                                     rightRear.setMode((DcMotor.RunMode.STOP_AND_RESET_ENCODER));
 
 
-                                    leftFront.setTargetPosition(-1000);
-                                    rightFront.setTargetPosition(1000);
-                                    leftRear.setTargetPosition(-1000);
-                                    rightRear.setTargetPosition(1000);
+                                    leftFront.setTargetPosition(-830);
+                                    rightFront.setTargetPosition(830);
+                                    leftRear.setTargetPosition(-830);
+                                    rightRear.setTargetPosition(830);
+                                    leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                                    rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                                    leftRear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                                    rightRear.setMode((DcMotor.RunMode.RUN_TO_POSITION));
+                                    leftFront.setPower(.3);
+                                    rightFront.setPower(.3);
+                                    rightRear.setPower(.3);
+                                    leftRear.setPower(.3);
+                                    runTime.reset();
+                                    while(leftFront.isBusy() && rightRear.isBusy() && leftRear.isBusy() && rightFront.isBusy() && opModeIsActive() && runTime.seconds() < 4.0)
+                                    {
+                                        telemetry.addData("Encoders", "Running");
+                                        telemetry.update();
+                                    }
+
+                                    leftFront.setPower(0);
+                                    rightFront.setPower(0);
+                                    rightRear.setPower(0);
+                                    leftRear.setPower(0);
+
+                                    //goes forward to drop the stone on the foundation side
+
+
+                                    leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                                    rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                                    leftRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                                    rightRear.setMode((DcMotor.RunMode.STOP_AND_RESET_ENCODER));
+
+
+                                    leftFront.setTargetPosition(2250);
+                                    rightFront.setTargetPosition(2250);
+                                    leftRear.setTargetPosition(2250);
+                                    rightRear.setTargetPosition(2250);
+                                    leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                                    rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                                    leftRear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                                    rightRear.setMode((DcMotor.RunMode.RUN_TO_POSITION));
+
+
+                                    leftFront.setPower(.5);
+                                    rightFront.setPower(.5);
+                                    rightRear.setPower(.5);
+                                    leftRear.setPower(.5);
+                                    runTime.reset();
+                                    while (leftFront.isBusy() && rightRear.isBusy() && leftRear.isBusy() && rightFront.isBusy() && opModeIsActive() && runTime.seconds() < 6.0) {
+                                        telemetry.addData("Encoders", "Running");
+                                        telemetry.update();
+                                    }
+
+                                    leftFront.setPower(0);
+                                    rightFront.setPower(0);
+                                    rightRear.setPower(0);
+                                    leftRear.setPower(0);
+
+                                    armServo.setPosition(.4);
+
+                                    //drops stone and goes backward all the way to the edge
+
+
+                                    leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                                    rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                                    leftRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                                    rightRear.setMode((DcMotor.RunMode.STOP_AND_RESET_ENCODER));
+
+
+                                    leftFront.setTargetPosition(-2890);
+                                    rightFront.setTargetPosition(-2890);
+                                    leftRear.setTargetPosition(-2890);
+                                    rightRear.setTargetPosition(-2890);
+                                    leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                                    rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                                    leftRear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                                    rightRear.setMode((DcMotor.RunMode.RUN_TO_POSITION));
+
+
+                                    leftFront.setPower(.5);
+                                    rightFront.setPower(.5);
+                                    rightRear.setPower(.5);
+                                    leftRear.setPower(.5);
+                                    runTime.reset();
+                                    while (leftFront.isBusy() && rightRear.isBusy() && leftRear.isBusy() && rightFront.isBusy() && opModeIsActive() && runTime.seconds() < 6.0) {
+                                        telemetry.addData("Encoders", "Running");
+                                        telemetry.update();
+                                    }
+
+                                    leftFront.setPower(0);
+                                    rightFront.setPower(0);
+                                    rightRear.setPower(0);
+                                    leftRear.setPower(0);
+
+                                    //rotates so its facing the stones again
+
+                                    leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                                    rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                                    leftRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                                    rightRear.setMode((DcMotor.RunMode.STOP_AND_RESET_ENCODER));
+
+
+                                    leftFront.setTargetPosition(830);
+                                    rightFront.setTargetPosition(-830);
+                                    leftRear.setTargetPosition(830);
+                                    rightRear.setTargetPosition(-830);
                                     leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                                     rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                                     leftRear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -309,38 +422,6 @@ public class skyStonePosNOMOVE extends LinearOpMode {
                                     leftRear.setPower(0);
 
 
-                                    leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                                    rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                                    leftRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                                    rightRear.setMode((DcMotor.RunMode.STOP_AND_RESET_ENCODER));
-
-
-                                    leftFront.setTargetPosition(2500);
-                                    rightFront.setTargetPosition(2500);
-                                    leftRear.setTargetPosition(2500);
-                                    rightRear.setTargetPosition(2500);
-                                    leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                                    rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                                    leftRear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                                    rightRear.setMode((DcMotor.RunMode.RUN_TO_POSITION));
-
-
-                                    leftFront.setPower(.5);
-                                    rightFront.setPower(.5);
-                                    rightRear.setPower(.5);
-                                    leftRear.setPower(.5);
-                                    runTime.reset();
-                                    while (leftFront.isBusy() && rightRear.isBusy() && leftRear.isBusy() && rightFront.isBusy() && opModeIsActive() && runTime.seconds() < 7.0) {
-                                        telemetry.addData("Encoders", "Running");
-                                        telemetry.update();
-                                    }
-
-                                    leftFront.setPower(0);
-                                    rightFront.setPower(0);
-                                    rightRear.setPower(0);
-                                    leftRear.setPower(0);
-
-                                    armServo.setPosition(.4);
                                 }
                                 else if (skyStone > 300) {
                                     telemetry.addData("Gold Mineral Position", "Right");
@@ -353,10 +434,10 @@ public class skyStonePosNOMOVE extends LinearOpMode {
                                     rightRear.setMode((DcMotor.RunMode.STOP_AND_RESET_ENCODER));
 
 
-                                    leftFront.setTargetPosition(500);
-                                    rightFront.setTargetPosition(-500);
-                                    leftRear.setTargetPosition(-500);
-                                    rightRear.setTargetPosition(500);
+                                    leftFront.setTargetPosition(550);
+                                    rightFront.setTargetPosition(-550);
+                                    leftRear.setTargetPosition(-550);
+                                    rightRear.setTargetPosition(550);
                                     leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                                     rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                                     leftRear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -414,10 +495,10 @@ public class skyStonePosNOMOVE extends LinearOpMode {
                                     leftRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                                     rightRear.setMode((DcMotor.RunMode.STOP_AND_RESET_ENCODER));
 
-                                    leftFront.setTargetPosition(-900);
-                                    rightFront.setTargetPosition(-900);
-                                    leftRear.setTargetPosition(-900);
-                                    rightRear.setTargetPosition(-900);
+                                    leftFront.setTargetPosition(-950);
+                                    rightFront.setTargetPosition(-950);
+                                    leftRear.setTargetPosition(-950);
+                                    rightRear.setTargetPosition(-950);
                                     leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                                     rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                                     leftRear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -443,10 +524,10 @@ public class skyStonePosNOMOVE extends LinearOpMode {
                                     rightRear.setMode((DcMotor.RunMode.STOP_AND_RESET_ENCODER));
 
 
-                                    leftFront.setTargetPosition(-1000);
-                                    rightFront.setTargetPosition(1000);
-                                    leftRear.setTargetPosition(-1000);
-                                    rightRear.setTargetPosition(1000);
+                                    leftFront.setTargetPosition(-1080);
+                                    rightFront.setTargetPosition(1080);
+                                    leftRear.setTargetPosition(-1080);
+                                    rightRear.setTargetPosition(1080);
                                     leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                                     rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                                     leftRear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -475,10 +556,10 @@ public class skyStonePosNOMOVE extends LinearOpMode {
                                     rightRear.setMode((DcMotor.RunMode.STOP_AND_RESET_ENCODER));
 
 
-                                    leftFront.setTargetPosition(2500);
-                                    rightFront.setTargetPosition(2500);
-                                    leftRear.setTargetPosition(2500);
-                                    rightRear.setTargetPosition(2500);
+                                    leftFront.setTargetPosition(2200);
+                                    rightFront.setTargetPosition(2200);
+                                    leftRear.setTargetPosition(2200);
+                                    rightRear.setTargetPosition(2200);
                                     leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                                     rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                                     leftRear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -490,7 +571,7 @@ public class skyStonePosNOMOVE extends LinearOpMode {
                                     rightRear.setPower(.5);
                                     leftRear.setPower(.5);
                                     runTime.reset();
-                                    while (leftFront.isBusy() && rightRear.isBusy() && leftRear.isBusy() && rightFront.isBusy() && opModeIsActive() && runTime.seconds() < 7) {
+                                    while (leftFront.isBusy() && rightRear.isBusy() && leftRear.isBusy() && rightFront.isBusy() && opModeIsActive() && runTime.seconds() < 6) {
                                         telemetry.addData("Encoders", "Running");
                                         telemetry.update();
                                     }
@@ -502,7 +583,70 @@ public class skyStonePosNOMOVE extends LinearOpMode {
 
                                     armServo.setPosition(.4);
 
+                                    leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                                    rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                                    leftRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                                    rightRear.setMode((DcMotor.RunMode.STOP_AND_RESET_ENCODER));
+
+
+                                    leftFront.setTargetPosition(-3000);
+                                    rightFront.setTargetPosition(-3000);
+                                    leftRear.setTargetPosition(-3000);
+                                    rightRear.setTargetPosition(-3000);
+                                    leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                                    rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                                    leftRear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                                    rightRear.setMode((DcMotor.RunMode.RUN_TO_POSITION));
+
+
+                                    leftFront.setPower(.5);
+                                    rightFront.setPower(.5);
+                                    rightRear.setPower(.5);
+                                    leftRear.setPower(.5);
+                                    runTime.reset();
+                                    while (leftFront.isBusy() && rightRear.isBusy() && leftRear.isBusy() && rightFront.isBusy() && opModeIsActive() && runTime.seconds() < 6) {
+                                        telemetry.addData("Encoders", "Running");
+                                        telemetry.update();
                                     }
+
+                                    leftFront.setPower(0);
+                                    rightFront.setPower(0);
+                                    rightRear.setPower(0);
+                                    leftRear.setPower(0);
+
+                                    leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                                    rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                                    leftRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                                    rightRear.setMode((DcMotor.RunMode.STOP_AND_RESET_ENCODER));
+
+                                    leftFront.setTargetPosition(1080);
+                                    rightFront.setTargetPosition(-1080);
+                                    leftRear.setTargetPosition(1080);
+                                    rightRear.setTargetPosition(-1080);
+                                    leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                                    rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                                    leftRear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                                    rightRear.setMode((DcMotor.RunMode.RUN_TO_POSITION));
+
+
+                                    leftFront.setPower(.3);
+                                    rightFront.setPower(.3);
+                                    rightRear.setPower(.3);
+                                    leftRear.setPower(.3);
+                                    runTime.reset();
+                                    while (leftFront.isBusy() && rightRear.isBusy() && leftRear.isBusy() && rightFront.isBusy() && opModeIsActive() && runTime.seconds() < 4) {
+                                        telemetry.addData("Encoders", "Running");
+                                        telemetry.update();
+                                    }
+
+                                    leftFront.setPower(0);
+                                    rightFront.setPower(0);
+                                    rightRear.setPower(0);
+                                    leftRear.setPower(0);
+
+
+
+                                }
 
 
                                 else if (skyStone < 300 && skyStone >100)
@@ -571,10 +715,10 @@ public class skyStonePosNOMOVE extends LinearOpMode {
                                     leftRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                                     rightRear.setMode((DcMotor.RunMode.STOP_AND_RESET_ENCODER));
 
-                                    leftFront.setTargetPosition(-820);
-                                    rightFront.setTargetPosition(820);
-                                    leftRear.setTargetPosition(-820);
-                                    rightRear.setTargetPosition(820);
+                                    leftFront.setTargetPosition(-870);
+                                    rightFront.setTargetPosition(870);
+                                    leftRear.setTargetPosition(-870);
+                                    rightRear.setTargetPosition(870);
                                     leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                                     rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                                     leftRear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -597,11 +741,16 @@ public class skyStonePosNOMOVE extends LinearOpMode {
                                     leftRear.setPower(0);
 
 
+                                    leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                                    rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                                    leftRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                                    rightRear.setMode((DcMotor.RunMode.STOP_AND_RESET_ENCODER));
 
-                                    leftFront.setTargetPosition(2500);
-                                    rightFront.setTargetPosition(2500);
-                                    leftRear.setTargetPosition(2500);
-                                    rightRear.setTargetPosition(2500);
+
+                                    leftFront.setTargetPosition(2250);
+                                    rightFront.setTargetPosition(2250);
+                                    leftRear.setTargetPosition(2250);
+                                    rightRear.setTargetPosition(2250);
                                     leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                                     rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                                     leftRear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -625,12 +774,73 @@ public class skyStonePosNOMOVE extends LinearOpMode {
 
                                     armServo.setPosition(.4);
 
-                                    sleep(1000);
-
-                                    
 
 
-                                telemetry.update();
+                                    leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                                    rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                                    leftRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                                    rightRear.setMode((DcMotor.RunMode.STOP_AND_RESET_ENCODER));
+
+
+                                    leftFront.setTargetPosition(-3000);
+                                    rightFront.setTargetPosition(-3000);
+                                    leftRear.setTargetPosition(-3000);
+                                    rightRear.setTargetPosition(-3000);
+                                    leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                                    rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                                    leftRear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                                    rightRear.setMode((DcMotor.RunMode.RUN_TO_POSITION));
+
+
+                                    leftFront.setPower(.5);
+                                    rightFront.setPower(.5);
+                                    rightRear.setPower(.5);
+                                    leftRear.setPower(.5);
+                                    runTime.reset();
+                                    while (leftFront.isBusy() && rightRear.isBusy() && leftRear.isBusy() && rightFront.isBusy() && opModeIsActive() && runTime.seconds() < 6) {
+                                        telemetry.addData("Encoders", "Running");
+                                        telemetry.update();
+                                    }
+
+                                    leftFront.setPower(0);
+                                    rightFront.setPower(0);
+                                    rightRear.setPower(0);
+                                    leftRear.setPower(0);
+
+                                    leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                                    rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                                    leftRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                                    rightRear.setMode((DcMotor.RunMode.STOP_AND_RESET_ENCODER));
+
+                                    leftFront.setTargetPosition(870);
+                                    rightFront.setTargetPosition(-870);
+                                    leftRear.setTargetPosition(870);
+                                    rightRear.setTargetPosition(-870);
+                                    leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                                    rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                                    leftRear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                                    rightRear.setMode((DcMotor.RunMode.RUN_TO_POSITION));
+
+
+                                    leftFront.setPower(.3);
+                                    rightFront.setPower(.3);
+                                    rightRear.setPower(.3);
+                                    leftRear.setPower(.3);
+                                    runTime.reset();
+                                    while (leftFront.isBusy() && rightRear.isBusy() && leftRear.isBusy() && rightFront.isBusy() && opModeIsActive() && runTime.seconds() < 4) {
+                                        telemetry.addData("Encoders", "Running");
+                                        telemetry.update();
+                                    }
+
+                                    leftFront.setPower(0);
+                                    rightFront.setPower(0);
+                                    rightRear.setPower(0);
+                                    leftRear.setPower(0);
+
+
+
+
+                                    telemetry.update();
                             }
                             telemetry.update();
                         }

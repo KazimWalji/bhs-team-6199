@@ -65,6 +65,7 @@ public class encodersTest extends LinearOpMode {
     private DcMotor rightFront = null;
     private DcMotor leftRear = null;
     private DcMotor rightRear = null;
+    private ElapsedTime runTime = new ElapsedTime();
     @Override
     public void runOpMode() {
         telemetry.addData("Status", "Initialized");
@@ -75,8 +76,8 @@ public class encodersTest extends LinearOpMode {
         rightFront = hardwareMap.get(DcMotor.class, "right_front");
         leftRear = hardwareMap.get(DcMotor.class, "left_rear");
         rightRear = hardwareMap.get(DcMotor.class, "right_rear");
-        leftRear.setDirection(DcMotorSimple.Direction.REVERSE);
-        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightRear.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
         stopEncoders();
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
@@ -86,28 +87,33 @@ public class encodersTest extends LinearOpMode {
         leftRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightRear.setMode((DcMotor.RunMode.STOP_AND_RESET_ENCODER));
 
-
-        leftFront.setTargetPosition(700);
-        rightFront.setTargetPosition(700);
-        leftRear.setTargetPosition(700);
-        rightRear.setTargetPosition(700);
+        leftFront.setTargetPosition(600);
+        rightFront.setTargetPosition(-600);
+        leftRear.setTargetPosition(600);
+        rightRear.setTargetPosition(-600);
         leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         leftRear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rightRear.setMode((DcMotor.RunMode.RUN_TO_POSITION));
-        leftFront.setPower(.1);
-        rightFront.setPower(.1);
-        rightRear.setPower(.1);
-        leftRear.setPower(.1);
-        while(leftFront.isBusy() || rightRear.isBusy() || leftRear.isBusy() || rightFront.isBusy() && opModeIsActive())
-        {
+
+
+        leftFront.setPower(.3);
+        rightFront.setPower(.3);
+        rightRear.setPower(.3);
+        leftRear.setPower(.3);
+        runTime.reset();
+        while (leftFront.isBusy() && rightRear.isBusy() && leftRear.isBusy() && rightFront.isBusy() && opModeIsActive() && runTime.seconds() < 4) {
             telemetry.addData("Encoders", "Running");
+            telemetry.update();
         }
 
         leftFront.setPower(0);
         rightFront.setPower(0);
         rightRear.setPower(0);
         leftRear.setPower(0);
+
+
+
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
 

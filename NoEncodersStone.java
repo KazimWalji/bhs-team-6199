@@ -52,7 +52,7 @@ import java.util.List;
  * IMPORTANT: In order to use this OpMode, you need to obtain your own Vuforia license key as
  * is explained below.
  */
-@Autonomous(name = "Tester", group = "Concept")
+@Autonomous(name = "VuforiaTester", group = "Concept")
 //@Disabled
 public class NoEncodersStone extends LinearOpMode {
     private static final String TFOD_MODEL_ASSET = "Skystone.tflite";
@@ -125,7 +125,7 @@ public class NoEncodersStone extends LinearOpMode {
                     if (updatedRecognitions != null) {
                       telemetry.addData("# Object Detected", updatedRecognitions.size());
 
-                        if (updatedRecognitions.size() == 3) {
+
                             int skyStone = -1;
                             int stone = -1;
                             int stone1 = -1;
@@ -143,19 +143,20 @@ public class NoEncodersStone extends LinearOpMode {
                             }
                             if (skyStone != -1 && stone != -1 && stone1 != -1) {
                                 if (skyStone < stone && skyStone < stone1) {
-                                    telemetry.addData("Gold Mineral Position", "Left");
+                                    telemetry.addData("Stone1", "Left");
                                     telemetry.addData("left pos", skyStone);
                                 }
                                 else if (skyStone > stone && skyStone > stone1) {
-                                        telemetry.addData("Gold Mineral Position", "Right");
+                                        telemetry.addData("SkyStone", "Right");
                                     telemetry.addData("left pos", skyStone);
                                     } else {
-                                    telemetry.addData("Gold Mineral Position", "Center");
+                                    telemetry.addData("SkyStone", "Center");
+                                    telemetry.addData("left pos", skyStone);
                                 }
 
 
 
-                            }
+
                         }
                       telemetry.update();
                     }

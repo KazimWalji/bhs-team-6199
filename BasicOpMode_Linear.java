@@ -65,12 +65,12 @@ public class BasicOpMode_Linear extends LinearOpMode {
     private DcMotor rightFront = null;
     private DcMotor leftRear = null;
     private DcMotor rightRear = null;
-   private Servo armServo = null;
-    private Servo gripperServo = null;
+    private Servo armServo = null;
+
     @Override
     public void runOpMode() {
-
-                // Initialize the hardware variables. Note that the strings used here as parameters
+        double x = -1; //.5
+        // Initialize the hardware variables. Note that the strings used here as parameters
         // to 'get' must correspond to the names assigned during the robot configuration
         // step (using the FTC Robot Controller app on the phone).
         leftFront = hardwareMap.get(DcMotor.class, "left_front");
@@ -83,8 +83,7 @@ public class BasicOpMode_Linear extends LinearOpMode {
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
-        armServo.setPosition(.4);
-
+        armServo.setPosition(x);
         runtime.reset();
         // Look for DPAD presses to change the selection
 
@@ -94,31 +93,41 @@ public class BasicOpMode_Linear extends LinearOpMode {
         while (opModeIsActive()) {
 
 
-                if(gamepad1.a)
-                {
-                    armServo.setPosition(.75);
-                }
-                if (gamepad1.y)
-                {
-                    armServo.setPosition(.4);
-                }
+            if(gamepad1.a)
+            {
+
+                armServo.setPosition(.5);
+            }
+            if(gamepad1.y)
+            {
+                armServo.setPosition(0);
+            }
+            if(gamepad1.x)
+            {
+                armServo.setPosition(0);
+            }
+            if(gamepad1.b)
+            {
+                armServo.setPosition(1);
+            }
 
 
-                double r = Math.hypot(-gamepad1.left_stick_x, gamepad1.left_stick_y);
-                double robotAngle = Math.atan2(gamepad1.left_stick_y, -gamepad1.left_stick_x) - Math.PI / 4;
-                double rightX = (gamepad1.right_stick_x) ;
-                final double v1 = (.7*(r * Math.cos(robotAngle) + rightX));
-                final double v2 = (.7*(r * Math.sin(robotAngle) - rightX));
-                final double v3 = (.7*(r * Math.sin(robotAngle) + rightX));
-                final double v4 = (.7*(r * Math.cos(robotAngle) - rightX));
+            double r = Math.hypot(-gamepad1.left_stick_x, gamepad1.left_stick_y);
+            double robotAngle = Math.atan2(gamepad1.left_stick_y, -gamepad1.left_stick_x) - Math.PI / 4;
+            double rightX = (gamepad1.right_stick_x *.9) ;
+            final double v1 = r * Math.cos(robotAngle) + rightX;
+            final double v2 = r * Math.sin(robotAngle) - rightX;
+            final double v3 = r * Math.sin(robotAngle) + rightX;
+            final double v4 = r * Math.cos(robotAngle) - rightX;
 
-                leftFront.setPower(v1);
-                rightFront.setPower(v2);
-                leftRear.setPower(v3);
-                rightRear.setPower(v4);
-                // Show the elapsed game time and wheel power.
-                telemetry.addData("Status", "Run Time: " + runtime.toString());
-                telemetry.update();
+            leftFront.setPower(v1* .8);
+            rightFront.setPower(v2*.8);
+            leftRear.setPower(v3*.8);
+            rightRear.setPower(v4*.8);
+            // Show the elapsed game time and wheel power.
+            telemetry.addData("Status", "Run Time: " + runtime.toString());
+            telemetry.addData("Servo position", armServo.getPosition());
+            telemetry.update();
 
         }
     }

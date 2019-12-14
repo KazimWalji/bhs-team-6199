@@ -1,17 +1,12 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import android.content.Context;
-
-import com.qualcomm.ftccommon.SoundPlayer;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
 
 
 /**
@@ -27,9 +22,9 @@ import com.qualcomm.robotcore.util.Range;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Basic: Linear OpMode", group="Linear Opmode")
+@TeleOp(name="Arm Lift", group="Linear Opmode")
 //@Disabled
-public class BasicOpMode_Linear extends LinearOpMode {
+public class arm_LIft extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
@@ -52,7 +47,6 @@ public class BasicOpMode_Linear extends LinearOpMode {
 
         armMotor = hardwareMap.get(DcMotor.class, "arm_motor");
         leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
-        leftRear.setDirection(DcMotorSimple.Direction.REVERSE);
         leftFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         leftRear.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -78,36 +72,35 @@ public class BasicOpMode_Linear extends LinearOpMode {
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
 
-            if(gamepad2.a)
+
+          if(gamepad1.left_stick_y<0)
+          {
+              armMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+              armMotor.setTargetPosition(1000);
+              armMotor.setPower(.3);
+              armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+              while(armMotor.isBusy() && gamepad1.left_stick_y < 0)
+              {
+
+              }
+              armMotor.setPower(0);
+          }
+            if(gamepad1.left_stick_y>0)
             {
+                armMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                armMotor.setTargetPosition(-1000);
+                armMotor.setPower(.3);
+                armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                while(armMotor.isBusy() && gamepad1.left_stick_y < 0)
+                {
 
-                armServo.setPosition(.5);
+                }
+                armMotor.setPower(0);
             }
-            if(gamepad2.y)
+            if (gamepad1.left_stick_y == 0)
             {
-                armServo.setPosition(.2);
+                armMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             }
-           armMotor.setPower(-gamepad2.left_stick_y);
-
-
-
-
-            double r = Math.hypot(-gamepad1.left_stick_x, gamepad1.left_stick_y);
-            double robotAngle = Math.atan2(gamepad1.left_stick_y, -gamepad1.left_stick_x) - Math.PI / 4;
-            double rightX = -gamepad1.right_stick_x;
-            final double v1 = r * Math.cos(robotAngle) + rightX;
-            final double v2 = r * Math.sin(robotAngle) - rightX;
-            final double v3 = r * Math.sin(robotAngle) + rightX;
-            final double v4 = r * Math.cos(robotAngle) - rightX;
-
-            leftFront.setPower(v1);
-            rightFront.setPower(v2);
-            leftRear.setPower(v3);
-            rightRear.setPower(v4);
-
-            // Show the elapsed game time and wheel power.
-            telemetry.addData("Status", "Run Time: " + runtime.toString());
-            telemetry.update();
 
         }
     }

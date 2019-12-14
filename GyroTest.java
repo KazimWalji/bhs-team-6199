@@ -29,37 +29,21 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import android.graphics.drawable.GradientDrawable;
+
 import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.hardware.lynx.LynxEmbeddedIMU;
-import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
-import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
-
-import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.Gyroscope;
-import com.qualcomm.robotcore.hardware.IntegratingGyroscope;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AngularVelocity;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcontroller.external.samples.HardwarePushbot;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaSkyStone;
-import org.firstinspires.ftc.robotcore.external.tfod.TfodSkyStone;
-import com.qualcomm.hardware.lynx.LynxEmbeddedIMU;
-import com.qualcomm.hardware.bosch.BNO055IMU;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.opencv.ml.ANN_MLP;
 
 
 /**
@@ -77,7 +61,7 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 
 @Autonomous(name="Blue AUto", group="Linear Opmode")
 
-public class encodersTest extends LinearOpMode {
+public class GyroTest extends LinearOpMode {
 
     // Declare OpMode members.
                   // Additional Gyro device
@@ -90,19 +74,28 @@ public class encodersTest extends LinearOpMode {
     private ElapsedTime runTime = new ElapsedTime();
     private DcMotor armMotor = null;
     private Servo armServo = null;
-
+    BNO055IMU imu;
 
 
     @Override
     public void runOpMode() {
 
-
-
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.mode = BNO055IMU.SensorMode.IMU;
+        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        parameters.loggingEnabled = false;
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        imu.initialize(parameters);
         // make sure the gyro is calibrated before continuing
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
+        // make sure the gyro is calibrated before continuing
+        while (!isStopRequested() && !imu.isGyroCalibrated())  {
+            sleep(50);
+            idle();
+        }
 
         leftFront = hardwareMap.get(DcMotor.class, "left_front");
         rightFront = hardwareMap.get(DcMotor.class, "right_front");
@@ -118,21 +111,25 @@ public class encodersTest extends LinearOpMode {
         if(opModeIsActive()) {
 
 
-            encoder(1100, 1100, 1200, 1100, .4, 3);
-            armServo.setPosition(.5);
-            sleep(1000);
-            encoders(-1000, -1000, -1000, -1000, .4, 3);
-
-            sleep(1000);
-
-
-            encoders(-2100, 2100, 1900, -1900, .4, 5);
-
-            armServo.setPosition(.2);
-
-            encoders(300, -300, -300, 300, .4, 5);
+           double currAngle;
+            Orientation angle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+            currAngle = (angle.firstAngle+360) % 360;
+            telemetry.addData("currAngle", currAngle);
+            telemetry.update();
+            while (currAngle < 80 && currAngle > 100) {
+                leftFront.setPower(.1);
+                leftRear.setPower(.1);
+                rightRear.setPower(.1);
+                rightFront.setPower(.1);
+                angle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+                currAngle = (angle.firstAngle+360) % 360;
+                telemetry.addData("currAngle", currAngle);
+                telemetry.update();
+            }
         }
-
+        forward(0);
+        sleep (5000);
+        turn (30);
     }
 
     public void stopEncoders()
@@ -249,6 +246,60 @@ public class encodersTest extends LinearOpMode {
         rightRear.setPower(0);
         leftRear.setPower(0);
     }
+    void turn(double tun) {
+        double vuAng = tun;
+        boolean turned = false;
+        while (!turned && opModeIsActive()) {
+            double ang = getHeading();
 
+            if (Math.abs(ang - vuAng) <= 0.5) {
+                rightFront.setPower(0);
+                rightRear.setPower(0);
+                leftFront.setPower(0);
+                leftRear.setPower(0);
+            } else if (ang >= 270 && vuAng <= 90) {
+                rightFront.setPower(-.5);
+                rightRear.setPower(.5);
+                leftFront.setPower(-.5);
+                leftRear.setPower(.5);
+
+            } else if (ang <= 90 && vuAng >= 270) {
+                rightFront.setPower(.5);
+                rightRear.setPower(-.5);
+                leftFront.setPower(.5);
+                leftRear.setPower(-.5);
+            } else if (ang - vuAng > 35) {
+                rightFront.setPower(.7);
+                rightRear.setPower(-.7);
+                leftFront.setPower(.7);
+                leftRear.setPower(-.7);
+            } else if (vuAng - ang > 35) {
+                leftFront.setPower(-0.7);
+                leftRear.setPower(0.7);
+                rightRear.setPower(-0.7);
+                rightFront.setPower(0.7);
+            } else if (ang < vuAng) {
+                rightFront.setPower(-0.15);
+                rightRear.setPower(0.15);
+               leftFront.setPower(-0.15);
+                leftRear.setPower(0.15);
+            } else if (ang > vuAng) {
+                rightFront.setPower(0.15);
+                leftFront.setPower(-0.15);
+                rightRear.setPower(0.15);
+                leftRear.setPower(-0.15);
+            }
+            ang = getHeading();
+            turned = (Math.abs(ang - vuAng) <= 0.5);
+        }
+        leftFront.setPower(0);
+        leftRear.setPower(0);
+        rightFront.setPower(0);
+        rightRear.setPower(0);
+    }
+    public double getHeading() {
+        Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        return (angles.firstAngle+360)%360;
+    }
 
 }

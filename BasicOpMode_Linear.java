@@ -63,10 +63,13 @@ public class BasicOpMode_Linear extends LinearOpMode {
         rightRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         armMotor.setZeroPowerBehavior((DcMotor.ZeroPowerBehavior.BRAKE));
         armServo = hardwareMap.get(Servo.class, "servo_arm");
-
+        armMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        boolean armM = false;
+        int currLiftPos = armMotor.getCurrentPosition();
+        int[] pos = {currLiftPos, 400, 1100, 1800, 2500, 3200, 3800, 1499, 1699};
         //Wait for the game to start (driver presses PLAY)
         waitForStart();
-
+        armServo.setPosition(.5);
 
 
         //armServo.setPosition(0);
@@ -78,19 +81,158 @@ public class BasicOpMode_Linear extends LinearOpMode {
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
 
+
+                if (gamepad2.dpad_down) {
+
+                    armMotor.setTargetPosition(pos[0]);
+                    armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    armMotor.setPower(.4);
+                    while (armMotor.isBusy() && opModeIsActive()) {
+                        double r = Math.hypot(-gamepad1.left_stick_x, gamepad1.left_stick_y);
+                        double robotAngle = Math.atan2(gamepad1.left_stick_y, -gamepad1.left_stick_x) - Math.PI / 4;
+                        double rightX = -gamepad1.right_stick_x;
+                        final double v1 = r * Math.cos(robotAngle) + rightX;
+                        final double v2 = r * Math.sin(robotAngle) - rightX;
+                        final double v3 = r * Math.sin(robotAngle) + rightX;
+                        final double v4 = r * Math.cos(robotAngle) - rightX;
+
+                        leftFront.setPower(v1);
+                        rightFront.setPower(v2);
+                        leftRear.setPower(v3);
+                        rightRear.setPower(v4);
+                    }
+                    telemetry.addData("pos", armMotor.getCurrentPosition());
+                    telemetry.update();
+                    armMotor.setPower(0);
+                }
+                if (gamepad2.dpad_right) {
+
+                    armMotor.setTargetPosition(pos[1]);
+                    armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    armMotor.setPower(.4);
+                    while (armMotor.isBusy() && opModeIsActive()) {
+                        double r = Math.hypot(-gamepad1.left_stick_x, gamepad1.left_stick_y);
+                        double robotAngle = Math.atan2(gamepad1.left_stick_y, -gamepad1.left_stick_x) - Math.PI / 4;
+                        double rightX = -gamepad1.right_stick_x;
+                        final double v1 = r * Math.cos(robotAngle) + rightX;
+                        final double v2 = r * Math.sin(robotAngle) - rightX;
+                        final double v3 = r * Math.sin(robotAngle) + rightX;
+                        final double v4 = r * Math.cos(robotAngle) - rightX;
+
+                        leftFront.setPower(v1);
+                        rightFront.setPower(v2);
+                        leftRear.setPower(v3);
+                        rightRear.setPower(v4);
+                    }
+                    armMotor.setPower(0);
+                    telemetry.addData("pos", armMotor.getCurrentPosition());
+                    telemetry.update();
+                }
+                if (gamepad2.dpad_left) {
+
+                    armMotor.setTargetPosition(pos[2]);
+                    armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    armMotor.setPower(.4);
+                    while (armMotor.isBusy() && opModeIsActive()) {
+                        double r = Math.hypot(-gamepad1.left_stick_x, gamepad1.left_stick_y);
+                        double robotAngle = Math.atan2(gamepad1.left_stick_y, -gamepad1.left_stick_x) - Math.PI / 4;
+                        double rightX = -gamepad1.right_stick_x;
+                        final double v1 = r * Math.cos(robotAngle) + rightX;
+                        final double v2 = r * Math.sin(robotAngle) - rightX;
+                        final double v3 = r * Math.sin(robotAngle) + rightX;
+                        final double v4 = r * Math.cos(robotAngle) - rightX;
+
+                        leftFront.setPower(v1);
+                        rightFront.setPower(v2);
+                        leftRear.setPower(v3);
+                        rightRear.setPower(v4);
+                    }
+                    armMotor.setPower(0);
+                    telemetry.addData("pos", armMotor.getCurrentPosition());
+                    telemetry.update();
+
+                }
+                if (gamepad2.dpad_up) {
+
+                    armMotor.setTargetPosition(pos[3]);
+                    armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    armMotor.setPower(.4);
+                    while (armMotor.isBusy() && opModeIsActive()) {
+                        double r = Math.hypot(-gamepad1.left_stick_x, gamepad1.left_stick_y);
+                        double robotAngle = Math.atan2(gamepad1.left_stick_y, -gamepad1.left_stick_x) - Math.PI / 4;
+                        double rightX = -gamepad1.right_stick_x;
+                        final double v1 = r * Math.cos(robotAngle) + rightX;
+                        final double v2 = r * Math.sin(robotAngle) - rightX;
+                        final double v3 = r * Math.sin(robotAngle) + rightX;
+                        final double v4 = r * Math.cos(robotAngle) - rightX;
+
+                        leftFront.setPower(v1);
+                        rightFront.setPower(v2);
+                        leftRear.setPower(v3);
+                        rightRear.setPower(v4);
+                    }
+                    armMotor.setPower(0);
+                    telemetry.addData("pos", armMotor.getCurrentPosition());
+                    telemetry.update();
+
+                }
+                if (gamepad2.right_bumper) {
+
+                    armMotor.setTargetPosition(pos[4]);
+                    armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    armMotor.setPower(.4);
+                    while (armMotor.isBusy() && opModeIsActive()) {
+                        double r = Math.hypot(-gamepad1.left_stick_x, gamepad1.left_stick_y);
+                        double robotAngle = Math.atan2(gamepad1.left_stick_y, -gamepad1.left_stick_x) - Math.PI / 4;
+                        double rightX = -gamepad1.right_stick_x;
+                        final double v1 = r * Math.cos(robotAngle) + rightX;
+                        final double v2 = r * Math.sin(robotAngle) - rightX;
+                        final double v3 = r * Math.sin(robotAngle) + rightX;
+                        final double v4 = r * Math.cos(robotAngle) - rightX;
+
+                        leftFront.setPower(v1);
+                        rightFront.setPower(v2);
+                        leftRear.setPower(v3);
+                        rightRear.setPower(v4);
+                    }
+                    armMotor.setPower(0);
+                    telemetry.addData("pos", armMotor.getCurrentPosition());
+                    telemetry.update();
+
+                }
+                if (gamepad2.left_bumper) {
+
+                    armMotor.setTargetPosition(pos[5]);
+                    armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    armMotor.setPower(.4);
+                    while (armMotor.isBusy() && opModeIsActive()) {
+                        double r = Math.hypot(-gamepad1.left_stick_x, gamepad1.left_stick_y);
+                        double robotAngle = Math.atan2(gamepad1.left_stick_y, -gamepad1.left_stick_x) - Math.PI / 4;
+                        double rightX = -gamepad1.right_stick_x;
+                        final double v1 = r * Math.cos(robotAngle) + rightX;
+                        final double v2 = r * Math.sin(robotAngle) - rightX;
+                        final double v3 = r * Math.sin(robotAngle) + rightX;
+                        final double v4 = r * Math.cos(robotAngle) - rightX;
+
+                        leftFront.setPower(v1);
+                        rightFront.setPower(v2);
+                        leftRear.setPower(v3);
+                        rightRear.setPower(v4);
+                    }
+                    armMotor.setPower(0);
+                    telemetry.addData("pos", armMotor.getCurrentPosition());
+                    telemetry.update();
+
+                }
+            }
             if(gamepad2.a)
             {
-
                 armServo.setPosition(.5);
             }
             if(gamepad2.y)
             {
-                armServo.setPosition(.2);
+                armServo.setPosition(.8);
             }
-           armMotor.setPower(-gamepad2.left_stick_y);
-
-
-
 
             double r = Math.hypot(-gamepad1.left_stick_x, gamepad1.left_stick_y);
             double robotAngle = Math.atan2(gamepad1.left_stick_y, -gamepad1.left_stick_x) - Math.PI / 4;
@@ -111,4 +253,3 @@ public class BasicOpMode_Linear extends LinearOpMode {
 
         }
     }
-}

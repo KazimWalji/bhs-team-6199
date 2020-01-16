@@ -39,9 +39,9 @@ import java.util.List;
  * monitor: 640 x 480
  *YES
  */
-@Autonomous(name= "RedAuto", group="Sky autonomous")
+@Autonomous(name= "opencvSkystoneDetector", group="Sky autonomous")
 //@Disabled//comment out this line before using
-public class RedAuto extends LinearOpMode {
+public class skystoneDetector extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor leftFront = null;
     private DcMotor rightFront = null;
@@ -56,23 +56,23 @@ public class RedAuto extends LinearOpMode {
     private static int valLeft = -1;
     private static int valRight = -1;
 
-    private static float rectHeight = .6f / 8f;
-    private static float rectWidth = 1.5f / 8f;
+    private static float rectHeight = .6f/8f;
+    private static float rectWidth = 1.5f/8f;
 
-    private static float offsetX = .6f / 8f;//changing this moves the three rects and the three circles left or right, range : (-2, 2) not inclusive
-    private static float offsetY = 1 / 8f;//changing this moves the three rects and circles up or down, range: (-4, 4) not inclusive
+    private static float offsetX = -1f/8f;//changing this moves the three rects and the three circles left or right, range : (-2, 2) not inclusive
+    private static float offsetY = (.5f)/8f;//changing this moves the three rects and circles up or down, range: (-4, 4) not inclusive
 
-    private static float[] midPos = {4f / 8f + offsetX, 4f / 8f + offsetY};//0 = col, 1 = row
-    private static float[] leftPos = {2f / 8f + offsetX, 4f / 8f + offsetY};
-    private static float[] rightPos = {6f / 8f + offsetX, 4f / 8f + offsetY};
+    private static float[] midPos = {4f/8f+offsetX, 4f/8f+offsetY};//0 = col, 1 = row
+    private static float[] leftPos = {2f/8f+offsetX, 4f/8f+offsetY};
+    private static float[] rightPos = {6f/8f+offsetX, 4f/8f+offsetY};
     //moves all rectangles right or left by amount. units are in ratio to monitor
 
     private final int rows = 320;
-    private final int cols = 240;
+    private final int cols =  240;
+
 
     OpenCvCamera phoneCam;
     BNO055IMU imu;
-
     @Override
     public void runOpMode() throws InterruptedException {
 
@@ -93,160 +93,20 @@ public class RedAuto extends LinearOpMode {
         // make sure the gyro is calibrated before continuing
 
 
+
         leftFront = hardwareMap.get(DcMotor.class, "left_front");
         rightFront = hardwareMap.get(DcMotor.class, "right_front");
         leftRear = hardwareMap.get(DcMotor.class, "left_rear");
         rightRear = hardwareMap.get(DcMotor.class, "right_rear");
         armMotor = hardwareMap.get(DcMotor.class, "arm_motor");
         armServo = hardwareMap.get(Servo.class, "servo_arm");
-        armMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        int currLiftPos = armMotor.getCurrentPosition();
-        int[] pos = {currLiftPos, 175, 400, 1100, 1899, 2879, 3099, 1299, 1499, 1699};
 
         rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
         rightRear.setDirection(DcMotorSimple.Direction.REVERSE);
 
         waitForStart();
-        armServo.setPosition(.5);
         runtime.reset();
         while (opModeIsActive()) {
-            telemetry.addData("Values", valLeft + "   " + valMid + "   " + valRight);
-            telemetry.addData("Height", rows);
-            telemetry.addData("Width", cols);
-            if (valLeft == 0) {
-                telemetry.addData("pos", "left");
-                telemetry.update();
-                encoder(1200, 1200, 1200, 1200, .3, 6);
-                encoder(-300, 300, 300, -300, .3, 3);
-                encoder(100, 100, 100, 100, .3, 3);
-                armServo.setPosition(.8);
-                sleep(1000);
-                encoder(-310, -310, -310, -310, .3, 3);
-
-                turnAngle(265, 273, .3, .3, -.3, -.3);
-                encoder(1900, 1900, 1900, 1900, .4, 7);
-                armServo.setPosition(.5);
-                sleep(1000);
-                encoder(-2800, -2000, -2800, -2800, .4, 7);
-                turnAngle(-3, 3, -.3, -.3, .3, .3);
-                encoder(680, 680, 680, 680, .3, 3);
-                encoder(-680, -680, -680, -680, .3, 3);
-                encoder(400, -400, -400, 400, .3, 3);
-                encoder(300, 300, 300, 300, .2, 3);
-
-
-                armServo.setPosition(.8);
-                sleep(1000);
-                encoder(-350, -350, -350, -350, .3, 3);
-
-                turnAngle(265, 273, .3, .3, -.3, -.3);
-                encoder(3300, 3300, 3300, 3300, .4, 7);
-                armServo.setPosition(.5);
-                sleep(1000);
-                encoder(-500, -500, -500, -500, .4, 5);
-                armMotor.setTargetPosition(pos[0]);
-                armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                armMotor.setPower(.4);
-                while (armMotor.isBusy() && opModeIsActive()) {
-
-                }
-                telemetry.addData("pos", armMotor.getCurrentPosition());
-                telemetry.update();
-                armMotor.setPower(0);
-                sleep(10000);
-            } else if (valMid == 0) {
-
-                telemetry.addData("pos", "center");
-                telemetry.update();
-
-                encoder(1200, 1200, 1200, 1200, .3, 7);
-                encoder(300, -300, -300, 300, .3, 3);
-                encoder (100,100,100,100,.1,3);
-                armServo.setPosition(.8);
-                sleep (1000);
-                encoder(-300, -300, -300, -300, .3, 3);
-
-                turnAngle(265, 273, .3, .3, -.3, -.3);
-                encoder(2000, 2000, 2000, 2000, .4, 7);
-                armServo.setPosition(.5);
-                sleep(1000);
-
-                encoder(-2970, -2970, -2970, -2970, .4, 7);
-
-                turnAngle(-3, 3, -.3, -.3, .3, .3);
-                encoder(300, 300, 300, 300, .1, 3);
-
-                armServo.setPosition(.8);
-                sleep(1000);
-                encoder(-400, -400, -400, -400, .3, 3);
-
-                turnAngle(265, 273, .3, .3, -.3, -.3);
-                encoder(3200, 3200, 3200, 3200, .4, 7);
-                armServo.setPosition(.5);
-                sleep(1000);
-                encoder(-400, -400, -400, -400, .4, 5);
-                armMotor.setTargetPosition(pos[0]);
-                armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                armMotor.setPower(.4);
-                while (armMotor.isBusy() && opModeIsActive())
-                {
-
-                }
-                telemetry.addData("pos", armMotor.getCurrentPosition());
-                telemetry.update();
-                armMotor.setPower(0);
-                sleep (10000);
-
-            } else if (valRight == 0) {
-                telemetry.addData("pos","right");
-                telemetry.update();
-
-                encoder(1100, 1100, 1100, 1100, .4, 5);
-                encoder(600, -600, -600, 600, .4, 3);
-                encoder(100, 100, 100, 100, .25, 3);
-                armServo.setPosition(.8);
-                sleep(1000);
-                encoder(-300, -300, -300, -300, .3, 3);
-
-                turnAngle(265, 273, .3, .3, -.3, -.3);
-                encoder(2500, 2500, 2500, 2500, .4, 7);
-                armServo.setPosition(.5);
-                sleep(1000);
-
-                encoder(-2900, -2900, -2900, -2900, .4, 7);
-
-                turnAngle(-3, 3, -.3, -.3, .3, .3);
-
-
-                encoder(600, 600, 600, 600, .3, 3);
-                encoder(-600, -600, -600, -600, .3, 3);
-
-
-                encoder(500, -500, -500, 500, .3, 3);
-                encoder(700, 700, 700, 700, .1, 3);
-                armServo.setPosition(.8);
-                sleep(1000);
-                encoder(-600, -600, -600, -600, .3, 3);
-
-                turnAngle(265, 273, .3, .3, -.3, -.3);
-                encoder(3400, 3400, 3400, 3400, .8, 7);
-                armServo.setPosition(.5);
-                sleep(1000);
-                encoder(-400, -400, -400, -400, .4, 5);
-                armMotor.setTargetPosition(pos[0]);
-                armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                armMotor.setPower(.4);
-                while (armMotor.isBusy() && opModeIsActive())
-                {
-
-                }
-                telemetry.addData("pos", armMotor.getCurrentPosition());
-                telemetry.update();
-                armMotor.setPower(0);
-                sleep (10000);
-
-            }
-            telemetry.update();
 
         }
     }
@@ -376,64 +236,100 @@ public class RedAuto extends LinearOpMode {
             }
         }
     }
+        public void encoder (int lf, int rf, int lr, int rr, double pow, int sec )
+        {
+            rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            leftRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            rightRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-    public void encoder(int lf, int rf, int lr, int rr, double pow, int sec) {
-        pow = pow + .1;
-        rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        leftRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            leftFront.setDirection(DcMotorSimple.Direction.FORWARD);
+            leftFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            leftRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            rightRear.setMode((DcMotor.RunMode.STOP_AND_RESET_ENCODER));
 
-        leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightRear.setMode((DcMotor.RunMode.STOP_AND_RESET_ENCODER));
-
-        rightFront.setTargetPosition(rf);
-        leftRear.setTargetPosition(lr);
-        rightRear.setTargetPosition(rr);
-        leftFront.setTargetPosition(lf);
-
-        leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        leftRear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightRear.setMode((DcMotor.RunMode.RUN_TO_POSITION));
+            rightFront.setTargetPosition(rf);
+            leftRear.setTargetPosition(lr);
+            rightRear.setTargetPosition(rr);
+            rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            leftRear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            rightRear.setMode((DcMotor.RunMode.RUN_TO_POSITION));
 
 
-        leftFront.setPower(pow);
-        rightFront.setPower(pow);
-        rightRear.setPower(pow);
-        leftRear.setPower(pow);
-        leftFront.setPower(pow);
-        runTime.reset();
-        while (rightRear.isBusy() || leftRear.isBusy() || rightFront.isBusy() | leftFront.isBusy() && opModeIsActive() && runTime.seconds() < sec) {
+            leftFront.setPower(pow);
+            rightFront.setPower(pow);
+            rightRear.setPower(pow);
+            leftRear.setPower(pow);
+            leftFront.setPower(pow);
+            runTime.reset();
+            while (rightRear.isBusy() && leftRear.isBusy() && rightFront.isBusy() && opModeIsActive() && runTime.seconds() < sec) {
 
 
+            }
+
+            leftFront.setPower(0);
+            rightFront.setPower(0);
+            rightRear.setPower(0);
+            leftRear.setPower(0);
         }
 
-        leftFront.setPower(0);
-        rightFront.setPower(0);
-        rightRear.setPower(0);
-        leftRear.setPower(0);
-    }
+        public void encoders (int lf, int rf, int lr, int rr, double pow, int sec )
+        {
+            rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            leftRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            rightRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
 
-    public void turnAngle(int firstA, int secA, double pow1, double pow2, double pow3, double pow4) {
-        leftFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            leftFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            leftRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            rightRear.setMode((DcMotor.RunMode.STOP_AND_RESET_ENCODER));
+
+            rightFront.setTargetPosition(rf);
+            leftRear.setTargetPosition(lr);
+            rightRear.setTargetPosition(rr);
+            rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            leftRear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            rightRear.setMode((DcMotor.RunMode.RUN_TO_POSITION));
+
+
+            leftFront.setPower(pow);
+            rightFront.setPower(pow);
+            rightRear.setPower(pow);
+            leftRear.setPower(pow);
+            leftFront.setPower(pow);
+            runTime.reset();
+            while (rightRear.isBusy() && leftRear.isBusy() && rightFront.isBusy() && opModeIsActive() && runTime.seconds() < sec) {
+
+
+            }
+
+            leftFront.setPower(0);
+            rightFront.setPower(0);
+            rightRear.setPower(0);
+            leftRear.setPower(0);
+        }
+    public double getHeading() {
+        Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        return (angles.firstAngle+360)%360;
+    }
+    public void turnAngle (int firstA, int secA, double pow1, double pow2, double pow3, double pow4)
+    {
         rightFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         leftRear.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightRear.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         double currAngle;
         Orientation angle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        currAngle = (angle.firstAngle + 360) % 360;
+        currAngle = (angle.firstAngle+360) % 360;
         telemetry.addData("currAngle", currAngle);
         telemetry.update();
-        while ((currAngle < firstA || currAngle > secA) && opModeIsActive()) {
+        while ((currAngle < firstA|| currAngle > secA) && opModeIsActive()) {
             leftFront.setPower(pow1);
             leftRear.setPower(pow2);
             rightRear.setPower(pow3);
             rightFront.setPower(pow4);
             angle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-            currAngle = (angle.firstAngle + 360) % 360;
+            currAngle = (angle.firstAngle+360) % 360;
             telemetry.addData("currAngle", currAngle);
             telemetry.update();
         }
@@ -444,8 +340,4 @@ public class RedAuto extends LinearOpMode {
 
     }
 
-    public double getHeading() {
-        Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        return (angles.firstAngle + 360) % 360;
-    }
 }

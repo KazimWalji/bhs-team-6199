@@ -96,30 +96,13 @@ public class BlueFoundation extends LinearOpMode {
         int[] pos = {currLiftPos, 400, 1100, 1800, 2500, 3200, 3800, 1499, 1699};
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
-            encoder(-500, 500, 500, -500, .3 , 10);
-            encoder(1000, 1000, 1000, 1000, .3 , 10);
-            armMotor.setTargetPosition(pos[1]);
-            armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            armMotor.setPower(.4);
-            while (armMotor.isBusy() && opModeIsActive())
-            {
-
-            }
-            telemetry.addData("pos", armMotor.getCurrentPosition());
-            telemetry.update();
-            armMotor.setPower(0);
-            encoder(300, 300, 300, 300, .1 , 10);
-            armMotor.setTargetPosition(pos[0]);
-            armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            armMotor.setPower(.4);
-            while (armMotor.isBusy() && opModeIsActive())
-            {
-
-            }
-            telemetry.addData("pos", armMotor.getCurrentPosition());
-            telemetry.update();
-            armMotor.setPower(0);
+            encoder(-550, 550, 550, -550, .3 , 10);
+            encoder(1100, 1100, 1100, 1100, .3 , 10);
+            armServo.setPosition(.8);
+            sleep(500);
             encoder(-1300, -1300, -1300, -1300, .1 , 10);
+            armServo.setPosition(.4);
+            sleep(500);
             encoder(2000, -2000, -2000, 2000, .3 , 10);
             sleep(20000);
         }

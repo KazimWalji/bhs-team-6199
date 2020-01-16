@@ -86,26 +86,27 @@ public class BlueLeft extends LinearOpMode {
         while (opModeIsActive()) {
             telemetry.addData("pos", "left");
             telemetry.update();
-            encoder(1500, 1200, 1200, 1500, .3, 3);
-
+            encoder(1200, 1200, 1200, 1200, .3, 6);
+            encoder(-100, 100, 100, -100, .3, 3);
+            encoder(100, 100, 100, 100, .3, 3);
             armServo.setPosition(.8);
             sleep(1000);
-            encoder(-410, -410, -410, -410, .3, 3);
+            encoder(-310, -310, -310, -310, .3, 3);
 
             turnAngle(85, 93, -.3, -.3, .3, .3);
-            encoder(1800, 1800, 1800, 1800, .4, 5);
+            encoder(1700, 1700, 1700, 1700, .4, 7);
             armServo.setPosition(.5);
             sleep(1000);
-            encoder(-2700, -2700, -2700, -2700, .4, 5);
+            encoder(-2700, -2700, -2700, -2700, .4, 7);
             turnAngle(-3, 3, .3, .3, -.3, -.3);
-            encoder(640, 640, 640, 640, .3, 3);
+            encoder(480, 480, 480, 480, .2, 3);
 
             armServo.setPosition(.8);
             sleep(1000);
             encoder(-350, -350, -350, -350, .3, 3);
 
             turnAngle(85, 93, -.3, -.3, .3, .3);
-            encoder(3000, 3000, 3000, 3000, .4, 5);
+            encoder(3000, 3000, 3000, 3000, .4, 7);
             armServo.setPosition(.5);
             sleep(1000);
             encoder(-500, -500, -500, -500, .4, 5);
@@ -125,7 +126,7 @@ public class BlueLeft extends LinearOpMode {
 
         public void encoder (int lf, int rf, int lr, int rr, double pow, int sec )
         {
-            pow = pow+.1;
+
             rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             leftRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             rightRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);

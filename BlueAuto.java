@@ -39,9 +39,9 @@ import java.util.List;
  * monitor: 640 x 480
  *YES
  */
-@Autonomous(name= "RedAuto", group="Sky autonomous")
+@Autonomous(name= "BlueAuto", group="Sky autonomous")
 //@Disabled//comment out this line before using
-public class RedAuto extends LinearOpMode {
+public class BlueAuto extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor leftFront = null;
     private DcMotor rightFront = null;
@@ -59,7 +59,7 @@ public class RedAuto extends LinearOpMode {
     private static float rectHeight = .6f / 8f;
     private static float rectWidth = 1.5f / 8f;
 
-    private static float offsetX = .6f / 8f;//changing this moves the three rects and the three circles left or right, range : (-2, 2) not inclusive
+    private static float offsetX = .2f / 8f;//changing this moves the three rects and the three circles left or right, range : (-2, 2) not inclusive
     private static float offsetY = 1 / 8f;//changing this moves the three rects and circles up or down, range: (-4, 4) not inclusive
 
     private static float[] midPos = {4f / 8f + offsetX, 4f / 8f + offsetY};//0 = col, 1 = row
@@ -117,30 +117,26 @@ public class RedAuto extends LinearOpMode {
                 telemetry.addData("pos", "left");
                 telemetry.update();
                 encoder(1200, 1200, 1200, 1200, .3, 6);
-                encoder(-300, 300, 300, -300, .3, 3);
+                encoder(-100, 100, 100, -100, .3, 3);
                 encoder(100, 100, 100, 100, .3, 3);
                 armServo.setPosition(.8);
                 sleep(1000);
                 encoder(-310, -310, -310, -310, .3, 3);
 
-                turnAngle(265, 273, .3, .3, -.3, -.3);
-                encoder(1900, 1900, 1900, 1900, .4, 7);
+                turnAngle(85, 93, -.3, -.3, .3, .3);
+                encoder(1700, 1700, 1700, 1700, .4, 7);
                 armServo.setPosition(.5);
                 sleep(1000);
-                encoder(-2800, -2000, -2800, -2800, .4, 7);
-                turnAngle(-3, 3, -.3, -.3, .3, .3);
-                encoder(680, 680, 680, 680, .3, 3);
-                encoder(-680, -680, -680, -680, .3, 3);
-                encoder(400, -400, -400, 400, .3, 3);
-                encoder(300, 300, 300, 300, .2, 3);
-
+                encoder(-2700, -2700, -2700, -2700, .4, 7);
+                turnAngle(-3, 3, .3, .3, -.3, -.3);
+                encoder(480, 480, 480, 480, .2, 3);
 
                 armServo.setPosition(.8);
                 sleep(1000);
                 encoder(-350, -350, -350, -350, .3, 3);
 
-                turnAngle(265, 273, .3, .3, -.3, -.3);
-                encoder(3300, 3300, 3300, 3300, .4, 7);
+                turnAngle(85, 93, -.3, -.3, .3, .3);
+                encoder(3000, 3000, 3000, 3000, .4, 7);
                 armServo.setPosition(.5);
                 sleep(1000);
                 encoder(-500, -500, -500, -500, .4, 5);
@@ -166,21 +162,20 @@ public class RedAuto extends LinearOpMode {
                 sleep (1000);
                 encoder(-300, -300, -300, -300, .3, 3);
 
-                turnAngle(265, 273, .3, .3, -.3, -.3);
+                turnAngle(85, 93, -.3, -.3, .3, .3);
                 encoder(2000, 2000, 2000, 2000, .4, 7);
                 armServo.setPosition(.5);
                 sleep(1000);
 
                 encoder(-2970, -2970, -2970, -2970, .4, 7);
-
-                turnAngle(-3, 3, -.3, -.3, .3, .3);
+                turnAngle(-3, 3, .3, .3, -.3, -.3);
                 encoder(300, 300, 300, 300, .1, 3);
 
                 armServo.setPosition(.8);
                 sleep(1000);
                 encoder(-400, -400, -400, -400, .3, 3);
 
-                turnAngle(265, 273, .3, .3, -.3, -.3);
+                turnAngle(85, 93, -.3, -.3, .3, .3);
                 encoder(3200, 3200, 3200, 3200, .4, 7);
                 armServo.setPosition(.5);
                 sleep(1000);
@@ -202,20 +197,19 @@ public class RedAuto extends LinearOpMode {
                 telemetry.update();
 
                 encoder(1100, 1100, 1100, 1100, .4, 5);
-                encoder(600, -600, -600, 600, .4, 3);
+                encoder(700, -700, -700, 700, .4, 3);
                 encoder(100, 100, 100, 100, .25, 3);
                 armServo.setPosition(.8);
                 sleep(1000);
                 encoder(-300, -300, -300, -300, .3, 3);
 
-                turnAngle(265, 273, .3, .3, -.3, -.3);
+                turnAngle(85, 93, -.3, -.3, .3, .3);
                 encoder(2500, 2500, 2500, 2500, .4, 7);
                 armServo.setPosition(.5);
                 sleep(1000);
 
                 encoder(-2900, -2900, -2900, -2900, .4, 7);
-
-                turnAngle(-3, 3, -.3, -.3, .3, .3);
+                turnAngle(-3, 3, .3, .3, -.3, -.3);
 
 
                 encoder(600, 600, 600, 600, .3, 3);
@@ -228,7 +222,7 @@ public class RedAuto extends LinearOpMode {
                 sleep(1000);
                 encoder(-600, -600, -600, -600, .3, 3);
 
-                turnAngle(265, 273, .3, .3, -.3, -.3);
+                turnAngle(85, 93, -.3, -.3, .3, .3);
                 encoder(3400, 3400, 3400, 3400, .8, 7);
                 armServo.setPosition(.5);
                 sleep(1000);

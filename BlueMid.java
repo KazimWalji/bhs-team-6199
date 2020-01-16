@@ -73,27 +73,29 @@ public class BlueMid extends LinearOpMode {
         while (opModeIsActive()) {
             telemetry.addData("pos", "center");
             telemetry.update();
-            encoder(400, -400, -400, 400, .3, 3);
-            encoder(1200, 1200, 1200, 1200, .3, 3);
+
+            encoder(1200, 1200, 1200, 1200, .3, 7);
+            encoder(300, -300, -300, 300, .3, 3);
+            encoder (100,100,100,100,.1,3);
             armServo.setPosition(.8);
             sleep (1000);
             encoder(-300, -300, -300, -300, .3, 3);
 
-            turnAngle(87, 93, -.3, -.3, .3, .3);
-            encoder(2000, 2000, 2000, 2000, .4, 5);
+            turnAngle(85, 93, -.3, -.3, .3, .3);
+            encoder(2000, 2000, 2000, 2000, .4, 7);
             armServo.setPosition(.5);
             sleep(1000);
 
-            encoder(-2900, -2900, -2900, -2900, .4, 5);
+            encoder(-2970, -2970, -2970, -2970, .4, 7);
             turnAngle(-3, 3, .3, .3, -.3, -.3);
-            encoder(400, 400, 400, 400, .3, 3);
+            encoder(300, 300, 300, 300, .1, 3);
 
             armServo.setPosition(.8);
             sleep(1000);
             encoder(-400, -400, -400, -400, .3, 3);
 
-            turnAngle(87, 93, -.3, -.3, .3, .3);
-            encoder(3200, 3200, 3200, 3200, .4, 5);
+            turnAngle(85, 93, -.3, -.3, .3, .3);
+            encoder(3200, 3200, 3200, 3200, .4, 7);
             armServo.setPosition(.5);
             sleep(1000);
             encoder(-400, -400, -400, -400, .4, 5);

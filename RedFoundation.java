@@ -33,12 +33,10 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
@@ -92,41 +90,21 @@ public class RedFoundation extends LinearOpMode {
         rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
         rightRear.setDirection(DcMotorSimple.Direction.REVERSE);
         armMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        int currLiftPos = armMotor.getCurrentPosition();
-        int[] pos = {currLiftPos, 400, 1100, 1800, 2500, 3200, 3800, 1499, 1699};
-
         waitForStart();
         runtime.reset();
-
+        int currLiftPos = armMotor.getCurrentPosition();
+        int[] pos = {currLiftPos, 400, 1100, 1800, 2500, 3200, 3800, 1499, 1699};
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
-            encoder(500, -500, -500, 500, .3 , 6);
-            encoder(1000, 1200, 1200, 1200, .3 , 10);
-            armMotor.setTargetPosition(pos[1]);
-            armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            armMotor.setPower(.4);
-            while (armMotor.isBusy() && opModeIsActive())
-            {
-
-            }
-            telemetry.addData("pos", armMotor.getCurrentPosition());
-            telemetry.update();
-            armMotor.setPower(0);
-            encoder(300, 300, 300, 300, .3 , 10);
-            armMotor.setTargetPosition(pos[0]);
-            armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            armMotor.setPower(.4);
-            while (armMotor.isBusy() && opModeIsActive())
-            {
-
-            }
-            telemetry.addData("pos", armMotor.getCurrentPosition());
-            telemetry.update();
-            armMotor.setPower(0);
-            encoder(-1300, -1300, -1300, -1300, .3 , 10);
-            encoder(-2000, 2000, 2000, -2000, .3 , 10);
+            encoder(550, -550, -550, 550, .3 , 10);
+            encoder(1100, 1100, 1100, 1100, .3 , 10);
+            armServo.setPosition(.8);
+            sleep(500);
+            encoder(-1300, -1300, -1300, -1300, .1 , 10);
+            armServo.setPosition(.4);
+            sleep(500);
+            encoder(2000, -2000, -2000, 2000, .3 , 10);
             sleep(20000);
-
         }
     }
     public void encoder (int lf, int rf, int lr, int rr, double pow, int sec )
@@ -134,13 +112,9 @@ public class RedFoundation extends LinearOpMode {
         rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         leftRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        leftFront.setDirection(DcMotorSimple.Direction.FORWARD);
-        if(lf<0)
-        {
-            leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
-        }
-        leftFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightRear.setMode((DcMotor.RunMode.STOP_AND_RESET_ENCODER));
@@ -148,6 +122,9 @@ public class RedFoundation extends LinearOpMode {
         rightFront.setTargetPosition(rf);
         leftRear.setTargetPosition(lr);
         rightRear.setTargetPosition(rr);
+        leftFront.setTargetPosition(lf);
+
+        leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         leftRear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rightRear.setMode((DcMotor.RunMode.RUN_TO_POSITION));
@@ -159,7 +136,7 @@ public class RedFoundation extends LinearOpMode {
         leftRear.setPower(pow);
         leftFront.setPower(pow);
         runTime.reset();
-        while (rightRear.isBusy() && leftRear.isBusy() && rightFront.isBusy() && opModeIsActive() && runTime.seconds() < sec) {
+        while (rightRear.isBusy() || leftRear.isBusy() || rightFront.isBusy() | leftFront.isBusy() && opModeIsActive() && runTime.seconds() < sec) {
 
 
         }
@@ -172,11 +149,10 @@ public class RedFoundation extends LinearOpMode {
 
     public void turnAngle (int firstA, int secA, double pow1, double pow2, double pow3, double pow4)
     {
+        leftFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         leftRear.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightRear.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        leftFront.setDirection(DcMotorSimple.Direction.FORWARD);
-
         double currAngle;
         Orientation angle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         currAngle = (angle.firstAngle+360) % 360;

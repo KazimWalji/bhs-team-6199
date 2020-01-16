@@ -26,7 +26,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
  * monitor: 640 x 480
  *YES
  */
-@Autonomous(name= "BlueMid", group="Sky autonomous")
+@Autonomous(name= "BlueRight", group="Sky autonomous")
 //@Disabled//comment out this line before using
 public class BlueRight extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
@@ -73,29 +73,35 @@ public class BlueRight extends LinearOpMode {
         while (opModeIsActive()) {
             telemetry.addData("pos","right");
             telemetry.update();
-            encoder(750, -750, -750, 750, .3, 3);
-            encoder(1300, 1300, 1300, 1300, .3, 3);
+
+            encoder(1100, 1100, 1100, 1100, .4, 5);
+            encoder(700, -700, -700, 700, .4, 3);
+            encoder(100, 100, 100, 100, .25, 3);
             armServo.setPosition(.8);
             sleep(1000);
             encoder(-300, -300, -300, -300, .3, 3);
 
-            turnAngle(87, 93, -.3, -.3, .3, .3);
-            encoder(2300, 2300, 2300, 2300, .4, 5);
+            turnAngle(85, 93, -.3, -.3, .3, .3);
+            encoder(2500, 2500, 2500, 2500, .4, 7);
             armServo.setPosition(.5);
             sleep(1000);
 
-            encoder(-3200, -3200, -3200, -3200, .4, 5);
+            encoder(-2900, -2900, -2900, -2900, .4, 7);
             turnAngle(-3, 3, .3, .3, -.3, -.3);
+
+
             encoder(600, 600, 600, 600, .3, 3);
             encoder(-600, -600, -600, -600, .3, 3);
-            encoder(400, -400, -400, 400, .3, 3);
-            encoder(400, 400, 400, 400, .3, 3);
+
+
+            encoder(500, -500, -500, 500, .3, 3);
+            encoder(700, 700, 700, 700, .1, 3);
             armServo.setPosition(.8);
             sleep(1000);
-            encoder(-400, -400, -400, -400, .3, 3);
+            encoder(-600, -600, -600, -600, .3, 3);
 
-            turnAngle(87, 93, -.3, -.3, .3, .3);
-            encoder(3400, 3400, 3400, 3400, .4, 5);
+            turnAngle(85, 93, -.3, -.3, .3, .3);
+            encoder(3400, 3400, 3400, 3400, .8, 7);
             armServo.setPosition(.5);
             sleep(1000);
             encoder(-400, -400, -400, -400, .4, 5);

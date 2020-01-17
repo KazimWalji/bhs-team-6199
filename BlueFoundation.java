@@ -96,8 +96,8 @@ public class BlueFoundation extends LinearOpMode {
         int[] pos = {currLiftPos, 400, 1100, 1800, 2500, 3200, 3800, 1499, 1699};
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
-            encoder(-550, 550, 550, -550, .3 , 10);
-            encoder(1100, 1100, 1100, 1100, .3 , 10);
+            encoder(-650, 650, 650, -650, .3 , 10);
+            encoder(1200, 1200, 1200, 1200, .3 , 10);
             armServo.setPosition(.8);
             sleep(500);
             encoder(-1300, -1300, -1300, -1300, .1 , 10);
@@ -181,4 +181,3 @@ public class BlueFoundation extends LinearOpMode {
 
 
 }
-

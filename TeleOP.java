@@ -1,4 +1,3 @@
-
 package org.firstinspires.ftc.teamcode;
 
 import android.content.Context;
@@ -65,7 +64,6 @@ public class TeleOP extends LinearOpMode {
         armServo = hardwareMap.get(Servo.class, "servo_arm");
         armMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         boolean armM = false;
-
         //Wait for the game to start (driver presses PLAY)
         waitForStart();
         int currLiftPos = armMotor.getCurrentPosition();
@@ -86,10 +84,19 @@ public class TeleOP extends LinearOpMode {
 
 
         while (opModeIsActive()) {
-                armMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
 
             telemetry.addData("gamepos",-gamepad2.right_stick_y);
             telemetry.update();
+            if(gamepad2.left_stick_y == 0)
+            {
+
+                armMotor.setZeroPowerBehavior((DcMotor.ZeroPowerBehavior.BRAKE));
+            }
+            else
+            {
+                armMotor.setPower(.07);
+            }
             if(armMotor.getCurrentPosition() < (pos[0] + 10) && -gamepad2.right_stick_y < 0)
             {
                 armMotor.setPower(0);

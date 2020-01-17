@@ -1,4 +1,3 @@
-
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
@@ -157,9 +156,9 @@ public class BlueAuto extends LinearOpMode {
 
                 encoder(1200, 1200, 1200, 1200, .3, 7);
                 encoder(300, -300, -300, 300, .3, 3);
-                encoder (100,100,100,100,.1,3);
+                encoder(100, 100, 100, 100, .1, 3);
                 armServo.setPosition(.8);
-                sleep (1000);
+                sleep(1000);
                 encoder(-300, -300, -300, -300, .3, 3);
 
                 turnAngle(85, 93, -.3, -.3, .3, .3);
@@ -183,17 +182,16 @@ public class BlueAuto extends LinearOpMode {
                 armMotor.setTargetPosition(pos[0]);
                 armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 armMotor.setPower(.4);
-                while (armMotor.isBusy() && opModeIsActive())
-                {
+                while (armMotor.isBusy() && opModeIsActive()) {
 
                 }
                 telemetry.addData("pos", armMotor.getCurrentPosition());
                 telemetry.update();
                 armMotor.setPower(0);
-                sleep (10000);
+                sleep(10000);
 
             } else if (valRight == 0) {
-                telemetry.addData("pos","right");
+                telemetry.addData("pos", "right");
                 telemetry.update();
 
                 encoder(1100, 1100, 1100, 1100, .4, 5);
@@ -230,14 +228,13 @@ public class BlueAuto extends LinearOpMode {
                 armMotor.setTargetPosition(pos[0]);
                 armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 armMotor.setPower(.4);
-                while (armMotor.isBusy() && opModeIsActive())
-                {
+                while (armMotor.isBusy() && opModeIsActive()) {
 
                 }
                 telemetry.addData("pos", armMotor.getCurrentPosition());
                 telemetry.update();
                 armMotor.setPower(0);
-                sleep (10000);
+                sleep(10000);
 
             }
             telemetry.update();

@@ -38,9 +38,9 @@ import java.util.List;
  *
  * monitor: 640 x 480
  *YES
- */@Autonomous(name= "RedAutoNew", group="Sky autonomous")
+ */@Autonomous(name= "RedAutoFoundLeft", group="Sky autonomous")
 //@Disabled//comment out this line before using
-public class RedAutoNew extends LinearOpMode {
+public class RedAutoNewFoundLeft extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor leftFront = null;
     private DcMotor rightFront = null;
@@ -118,46 +118,71 @@ public class RedAutoNew extends LinearOpMode {
             telemetry.addData("Height", rows);
             telemetry.addData("Width", cols);
             if (valLeft == 0) {
-                telemetry.addData("pos","right");
+                telemetry.addData("pos", "left");
                 telemetry.update();
-
-                encoder(1180, 1800, 1180, 1180, .4, 5);
-                encoder(560, -560, -560, 560, .4, 3);
-                encoder(100, 100, 100, 100, .25, 3);
+                encoder(1190, 1190, 1190, 1190, .3, 6);
+                encoder(-240, 240, 240, -240, .3, 3);
+                encoder(100, 100, 100, 100, .3, 3);
                 armServo.setPosition(.75);
                 sleep(1000);
-                encoder(-220, -220, -220, -220, .3, 3);
+                encoder(-310, -310, -310, -310, .3, 3);
 
                 turnAngle(265, 273, .3, .3, -.3, -.3);
-                encoder(1700, 1700, 1700, 1700, .4, 7);
+                encoder(2600, 2600, 2600, 2600, .4, 7);
+                armMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                armMotor.setTargetPosition(1000);
+                armMotor.setPower(.3);
+                armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                while(armMotor.isBusy() )
+                {
+
+                }
+                armMotor.setPower(0);
+                encoder(1500, 1500, 1500, 1500, .4, 7);
+                armMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                armMotor.setTargetPosition(currLiftPos);
+                armMotor.setPower(.3);
+                armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                while(armMotor.isBusy())
+                {
+
+                }
+                armMotor.setPower(0);
+
                 armServo.setPosition(.5);
                 sleep(1000);
-                encoder (200,-200,-200,200,.1,3);
-                encoder(-2740, -2740, -2740, -2740, .4, 7);
+                armMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                armMotor.setTargetPosition(1000);
+                armMotor.setPower(.8);
+                armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                while(armMotor.isBusy() )
+                {
 
-                turnAngle(-3, 3, -.2, -.2, .2, .2);
+                }
+                armMotor.setPower(0);
+                encoder (-100,-100,-100,-100,.5,3);
+                armMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                armMotor.setTargetPosition(currLiftPos);
+                armMotor.setPower(.8);
+                armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                while(armMotor.isBusy() )
+                {
 
-                encoder(400, 400, 400, 400, .1, 3);
-                armServo.setPosition(.75);
-                sleep(1000);
-                encoder(-450, -450, -450, -450, .3, 3);
+                }
+                armMotor.setPower(0);
+                encoder (-300,300,300,-300,.1,3);
+                encoder(-1800, -1800, -1800, -1800, .4, 5);
+                armMotor.setTargetPosition(pos[0]+100);
 
-                turnAngle(265, 273, .3, .3, -.3, -.3);
-                encoder(2800, 2800, 2800, 2800, .5, 7);
-                armServo.setPosition(.5);
-                sleep(1000);
-                encoder(-400, -400, -400, -400, .4, 5);
-                armMotor.setTargetPosition(pos[0]);
                 armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 armMotor.setPower(.4);
-                while (armMotor.isBusy() && opModeIsActive())
-                {
+                while (armMotor.isBusy() && opModeIsActive()) {
 
                 }
                 telemetry.addData("pos", armMotor.getCurrentPosition());
                 telemetry.update();
                 armMotor.setPower(0);
-                sleep (10000);
+                sleep(10000);
             } else if (valMid == 0) {
                 telemetry.addData("pos", "center");
                 telemetry.update();

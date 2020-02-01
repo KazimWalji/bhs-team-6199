@@ -1,16 +1,12 @@
+
 package org.firstinspires.ftc.teamcode;
 
-import android.content.Context;
-
-import com.qualcomm.ftccommon.SoundPlayer;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
 
 
 /**
@@ -26,7 +22,7 @@ import com.qualcomm.robotcore.util.Range;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name= "Basic: Linear OpMode", group="Linear Opmode")
+@TeleOp(name= "TeleOP", group="Linear Opmode")
 //@Disabled
 public class TeleOP extends LinearOpMode {
 
@@ -38,7 +34,8 @@ public class TeleOP extends LinearOpMode {
     private DcMotor rightRear = null;
     private Servo armServo = null;
     private DcMotor armMotor = null;
-
+    private DcMotor yeeter = null;
+    private Servo capstone = null;
     @Override
     public void runOpMode() {
         // Initialize the hardware variables. Note that the strings used here as parameters
@@ -48,10 +45,11 @@ public class TeleOP extends LinearOpMode {
         rightFront = hardwareMap.get(DcMotor.class, "right_front");
         leftRear  = hardwareMap.get(DcMotor.class, "left_rear");
         rightRear = hardwareMap.get(DcMotor.class, "right_rear");
-
+        yeeter = hardwareMap.get(DcMotor.class, "yeeter");
         armMotor = hardwareMap.get(DcMotor.class, "arm_motor");
         leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
         leftRear.setDirection(DcMotorSimple.Direction.REVERSE);
+        yeeter.setDirection(DcMotorSimple.Direction.REVERSE);
         leftFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         leftRear.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -62,21 +60,25 @@ public class TeleOP extends LinearOpMode {
         rightRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         armMotor.setZeroPowerBehavior((DcMotor.ZeroPowerBehavior.BRAKE));
         armServo = hardwareMap.get(Servo.class, "servo_arm");
+        capstone = hardwareMap.get(Servo.class, "cap");
         armMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         boolean armM = false;
+        boolean buttonPrev = false;
         //Wait for the game to start (driver presses PLAY)
         waitForStart();
+        telemetry.addData("cap:", capstone.getPosition());
+        telemetry.update();
         int currLiftPos = armMotor.getCurrentPosition();
         int[] pos = {currLiftPos, 400, 1100, 1800, 2500, 3200, 3800, 1499, 1699};
         armServo.setPosition(.5);
-
+        Double c = capstone.getPosition();
         //armServo.setPosition(0);
         runtime.reset();
         // Look for DPAD presses to change the selection
 
 
 
-        // run until the end of the match (driver presses STOP)
+        // run until the end of the match (driver presses STOP)`
 
 
 
@@ -85,37 +87,51 @@ public class TeleOP extends LinearOpMode {
 
         while (opModeIsActive()) {
 
-
-            telemetry.addData("gamepos",-gamepad2.right_stick_y);
-            telemetry.update();
-            if(gamepad2.left_stick_y == 0)
+            if (gamepad2.dpad_right)
             {
 
-                armMotor.setZeroPowerBehavior((DcMotor.ZeroPowerBehavior.BRAKE));
+                capstone.setPosition(0);
+                sleep(2000);
+                capstone.setPosition(c);
             }
-            else
+            if(gamepad1.right_trigger!=0){
+                yeeter.setPower(-gamepad1.right_trigger);
+                telemetry.addData("yeeter:", "reverse");
+                telemetry.update();
+
+            } else if(gamepad1.left_trigger!=0){
+                yeeter.setPower(gamepad1.left_trigger);
+                telemetry.addData("yeeter:", "forward");
+                telemetry.update();
+            }else{
+                yeeter.setPower(0);
+                telemetry.addData("yeeter:", "stop");
+                telemetry.update();
+            }
+            if(gamepad2.left_stick_y == 0  && armMotor.getCurrentPosition() > 300)
             {
+
                 armMotor.setPower(.07);
             }
-            if(armMotor.getCurrentPosition() < (pos[0] + 10) && -gamepad2.right_stick_y < 0)
+            if(armMotor.getCurrentPosition() < (pos[0] + 10) && -gamepad2.left_stick_y < 0)
             {
                 armMotor.setPower(0);
-
-
             }
             else
             {
-                armMotor.setPower(-gamepad2.right_stick_y);
-                telemetry.addData("pos",armMotor.getCurrentPosition());
+                armMotor.setPower(-gamepad2.left_stick_y);
             }
-            if(gamepad2.a)
-            {
-                armServo.setPosition(.5);
+            if(gamepad2.x && !buttonPrev){
+                if(armServo.getPosition() == .5)
+                {
+                    armServo.setPosition(.77);
+                }
+                else
+                {
+                    armServo.setPosition(.5);
+                }
             }
-            if(gamepad2.y)
-            {
-                armServo.setPosition(.8);
-            }
+            buttonPrev = gamepad2.x;
 
             double r = Math.hypot(-gamepad1.left_stick_x, gamepad1.left_stick_y);
             double robotAngle = Math.atan2(gamepad1.left_stick_y, -gamepad1.left_stick_x) - Math.PI / 4;

@@ -49,6 +49,7 @@ public class RedAuto extends LinearOpMode {
     private ElapsedTime runTime = new ElapsedTime();
     private DcMotor armMotor = null;
     private Servo armServo = null;
+    private DcMotor yeeter = null;
     //0 means skystone, 1 means yellow stone
     //-1 for debug, but we can keep it like this because if it works, it should change to either 0 or 255
     private static int valMid = -1;
@@ -99,11 +100,13 @@ public class RedAuto extends LinearOpMode {
         armMotor = hardwareMap.get(DcMotor.class, "arm_motor");
         armServo = hardwareMap.get(Servo.class, "servo_arm");
         armMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        yeeter = hardwareMap.get(DcMotor.class, "yeeter");
         int currLiftPos = armMotor.getCurrentPosition();
         int[] pos = {currLiftPos, 175, 400, 1100, 1899, 2879, 3099, 1299, 1499, 1699};
 
         rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
         rightRear.setDirection(DcMotorSimple.Direction.REVERSE);
+        yeeter.setDirection(DcMotorSimple.Direction.REVERSE);
 
         waitForStart();
         armServo.setPosition(.5);
@@ -200,26 +203,35 @@ public class RedAuto extends LinearOpMode {
                 telemetry.addData("pos","right");
                 telemetry.update();
 
-                encoder(1100, 1100, 1100, 1100, .4, 5);
+                encoder(1100, 1100, 1100, 1100, .4, 5);//moves towards stone
                 encoder(600, -600, -600, 600, .4, 3);
                 encoder(100, 100, 100, 100, .25, 3);
                 armServo.setPosition(.8);
                 sleep(1000);
-                encoder(-300, -300, -300, -300, .3, 3);
+                encoder(-300, -300, -300, -300, .3, 3);// back up
 
-                turnAngle(265, 273, .3, .3, -.3, -.3);
-                encoder(2500, 2500, 2500, 2500, .4, 7);
+                turnAngle(265, 273, .3, .3, -.3, -.3);// new turns right
+                encoder(2700, 2700, 2700, 2700, .4, 7);// forward and next to foundation
+                //new turnAngle method left, 90 degrees
+                armMotor.setTargetPosition(100);//linear slide up
+                encoder(100, 100, 100, 100, .25, 3);
+                armMotor.setTargetPosition(-90);//linear slide down
+                encoder(-1200, -1200, -1200, -1200, .4, 5);//move backwards
                 armServo.setPosition(.5);
                 sleep(1000);
-
-                encoder(-2900, -2900, -2900, -2900, .4, 7);
-
-                turnAngle(-3, 3, -.3, -.3, .3, .3);
-
+                encoder(-200, 200, 200, -200, .3, 3);//strafe left
+                encoder(850, 850, 850, 850, .3, 3);//move forward
+                //turn 180
+                encoder(-200, 200, 200, -200, .3, 3);//strafe left
+                encoder(900, 900, 900, 900, .3, 3);//forward
+                encoder(-100, -100, -100, -100, .3, 3);
+                armMotor.setTargetPosition(-10);
+                //turn left with new method
+                encoder(-3000, -3000, -3000, -3000, .4, 7);
+                turnAngle(-3, 3, -.3, -.3, .3, .3);//new turn angle
 
                 encoder(600, 600, 600, 600, .3, 3);
                 encoder(-600, -600, -600, -600, .3, 3);
-
 
                 encoder(500, -500, -500, 500, .3, 3);
                 encoder(700, 700, 700, 700, .1, 3);
@@ -227,11 +239,17 @@ public class RedAuto extends LinearOpMode {
                 sleep(1000);
                 encoder(-600, -600, -600, -600, .3, 3);
 
-                turnAngle(265, 273, .3, .3, -.3, -.3);
+                turnAngle(265, 273, .3, .3, -.3, -.3);//new turn right
                 encoder(3400, 3400, 3400, 3400, .8, 7);
+                encoder(800, -800, -800, 800, .3, 3);
+                armMotor.setTargetPosition(100);
+                encoder(100, 100, 100, 100, .3, 3);
                 armServo.setPosition(.5);
                 sleep(1000);
-                encoder(-400, -400, -400, -400, .4, 5);
+                encoder(-100, -100, -100, -100, .3, 3);
+                //turn 180
+                encoder(800, -800, -800, 800, .3, 3);
+                yeeter.setTargetPosition(300);
                 armMotor.setTargetPosition(pos[0]);
                 armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 armMotor.setPower(.4);

@@ -1,3 +1,4 @@
+
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -32,11 +33,11 @@ public class TeleOP extends LinearOpMode {
     private DcMotor leftRear = null;
     private DcMotor rightRear = null;
     private Servo armServo = null;
+    private Servo foundL = null;
+    private Servo foundR = null;
     private DcMotor armMotor = null;
     private DcMotor yeeter = null;
     private Servo capstone = null;
-    private Servo hook1 = null;
-    private Servo hook2 = null;
     @Override
     public void runOpMode() {
         // Initialize the hardware variables. Note that the strings used here as parameters
@@ -62,73 +63,49 @@ public class TeleOP extends LinearOpMode {
         armMotor.setZeroPowerBehavior((DcMotor.ZeroPowerBehavior.BRAKE));
         armServo = hardwareMap.get(Servo.class, "servo_arm");
         capstone = hardwareMap.get(Servo.class, "cap");
-        hook1 = hardwareMap.get(Servo.class, "hook1");
-        hook2 = hardwareMap.get(Servo.class, "hook2");
+        foundL = hardwareMap.get(Servo.class, "fl");
+        foundR = hardwareMap.get(Servo.class, "fr");
         armMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         boolean armM = false;
         boolean buttonPrev = false;
         //Wait for the game to start (driver presses PLAY)
         waitForStart();
+        foundationUP();
         telemetry.addData("cap:", capstone.getPosition());
         telemetry.update();
         int currLiftPos = armMotor.getCurrentPosition();
         int[] pos = {currLiftPos, 400, 1100, 1800, 2500, 3200, 3800, 1499, 1699};
         armServo.setPosition(.5);
         Double c = capstone.getPosition();
-        hook1.setPosition(1);
-        hook2.setPosition(1);
         //armServo.setPosition(0);
         runtime.reset();
         // Look for DPAD presses to change the selection
 
 
 
-        // run until the end of the match (driver presses STOP)`
-
-
-
-
-
 
         while (opModeIsActive()) {
 
-            if(gamepad1.a)
-            {
-                hook1.setPosition(.75);
-
-            }
-            if(gamepad1.y)
-            {
-                hook1.setPosition(1);
-
-            }
-
-            if(gamepad1.x)
-            {
-                hook2.setPosition(.75);
-
-            }
-            if(gamepad1.b)
-            {
-                hook2.setPosition(1);
-
-            }
-
-            if (gamepad2.dpad_right)
+            if (gamepad1.left_bumper)
             {
 
                 capstone.setPosition(0);
-                //sleep(2000);
-                //capstone.setPosition(c);
+
             }
-            if (gamepad2.dpad_left)
+            if (gamepad1.right_bumper)
             {
 
                 capstone.setPosition(.3);
-                //sleep(2000);
-               // capstone.setPosition(c);
-            }
 
+            }
+            if(gamepad1.left_bumper)
+            {
+                foundationDown();
+            }
+            if(gamepad2.right_bumper)
+            {
+                foundationUP();
+            }
             if(gamepad1.right_trigger!=0){
                 yeeter.setPower(-gamepad1.right_trigger);
                 telemetry.addData("yeeter:", "reverse");
@@ -143,10 +120,10 @@ public class TeleOP extends LinearOpMode {
                 telemetry.addData("yeeter:", "stop");
                 telemetry.update();
             }
-            if(gamepad2.left_stick_y == 0  && armMotor.getCurrentPosition() > 300)
+            if(gamepad2.left_stick_y == 0)
             {
 
-                armMotor.setPower(.07);
+                armMotor.setPower(0);
             }
             if(armMotor.getCurrentPosition() < (pos[0] + 10) && -gamepad2.left_stick_y < 0)
             {
@@ -159,7 +136,7 @@ public class TeleOP extends LinearOpMode {
             if(gamepad2.x && !buttonPrev){
                 if(armServo.getPosition() == .5)
                 {
-                    armServo.setPosition(.77);
+                    armServo.setPosition(.8);
                 }
                 else
                 {
@@ -168,13 +145,9 @@ public class TeleOP extends LinearOpMode {
             }
             buttonPrev = gamepad2.x;
 
-
-
-            buttonPrev = gamepad1.right_bumper;
-
             double r = Math.hypot(-gamepad1.left_stick_x, gamepad1.left_stick_y);
             double robotAngle = Math.atan2(gamepad1.left_stick_y, -gamepad1.left_stick_x) - Math.PI / 4;
-            double rightX = -gamepad1.right_stick_x;
+            double rightX = (-gamepad1.right_stick_x)*.7;
             final double v1 = r * Math.cos(robotAngle) + rightX;
             final double v2 = r * Math.sin(robotAngle) - rightX;
             final double v3 = r * Math.sin(robotAngle) + rightX;
@@ -190,5 +163,15 @@ public class TeleOP extends LinearOpMode {
             telemetry.update();
 
         }
+    }
+    public  void foundationUP()
+    {
+        foundL.setPosition(.75);
+        foundR.setPosition(.75);
+    }
+    public  void foundationDown()
+    {
+        foundL.setPosition(1);
+        foundR.setPosition(1);
     }
 }

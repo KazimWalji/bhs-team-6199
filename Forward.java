@@ -71,6 +71,8 @@ public class Forward extends LinearOpMode {
     private Servo armServo = null;
     OpenCvCamera phoneCam;
     BNO055IMU imu;
+    private Servo foundL = null;
+    private Servo foundR = null;
     @Override
     public void runOpMode() {
 
@@ -80,6 +82,9 @@ public class Forward extends LinearOpMode {
         rightRear = hardwareMap.get(DcMotor.class, "right_rear");
         armMotor = hardwareMap.get(DcMotor.class, "arm_motor");
         armServo = hardwareMap.get(Servo.class, "servo_arm");
+        foundL = hardwareMap.get(Servo.class, "fl");
+        foundR = hardwareMap.get(Servo.class, "fr");
+
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.mode = BNO055IMU.SensorMode.IMU;
         parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
@@ -95,13 +100,31 @@ public class Forward extends LinearOpMode {
         int[] pos = {currLiftPos, 400, 1100, 1800, 2500, 3200, 3800, 1499, 1699};
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
-            encoder(600,600,600,600, .5, 5);
-            armServo.setPosition(.75);
-            sleep(3000);
+            rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            leftRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            rightRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+            leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            leftRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            rightRear.setMode((DcMotor.RunMode.STOP_AND_RESET_ENCODER));
+           while (rightRear.getCurrentPosition() < 500) {
+                int error = 1000 - armMotor.getCurrentPosition();
+                double pow = (error * (.3 / 1000)) + .1;
+                leftFront.setPower(pow);
+                leftRear.setPower(pow);
+                rightRear.setPower(pow);
+                rightFront.setPower(pow);
+            }
+            leftFront.setPower(0);
+            leftRear.setPower(0);
+            rightRear.setPower(0);
+            rightFront.setPower(0);
+            sleep(60000);
         }
     }
     public void encoder(int lf, int rf, int lr, int rr, double pow, int sec) {
-        pow = pow + .1;
         rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         leftRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -227,4 +250,61 @@ public class Forward extends LinearOpMode {
 
     }
 
+    public void encoderSlow (int lf, int rf, int lr, int rr, double pow, int sec, int tick) {
+
+        rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightRear.setMode((DcMotor.RunMode.STOP_AND_RESET_ENCODER));
+
+        rightFront.setTargetPosition(rf);
+        leftRear.setTargetPosition(lr);
+        rightRear.setTargetPosition(rr);
+        leftFront.setTargetPosition(lf);
+
+        leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftRear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightRear.setMode((DcMotor.RunMode.RUN_TO_POSITION));
+
+
+        leftFront.setPower(pow);
+        rightFront.setPower(pow);
+        rightRear.setPower(pow);
+        leftRear.setPower(pow);
+        leftFront.setPower(pow);
+        runTime.reset();
+        while ((rightRear.isBusy() || leftRear.isBusy() || rightFront.isBusy() || leftFront.isBusy()) && opModeIsActive() && runTime.seconds() < sec) {
+            if(rightRear.getCurrentPosition()>tick)
+            {
+                leftFront.setPower(.2);
+                rightFront.setPower(.2);
+                rightRear.setPower(.2);
+                leftRear.setPower(.2);
+                leftFront.setPower(.2);
+
+            }
+
+        }
+
+        leftFront.setPower(0);
+        rightFront.setPower(0);
+        rightRear.setPower(0);
+        leftRear.setPower(0);
+    }
+    public  void foundationUP()
+    {
+        foundL.setPosition(.75);
+        foundR.setPosition(.75);
+    }
+    public  void foundationDown()
+    {
+        foundL.setPosition(1);
+        foundR.setPosition(1);
+    }
 }

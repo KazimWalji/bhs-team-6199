@@ -49,9 +49,11 @@ public class TeleOP extends LinearOpMode {
         rightRear = hardwareMap.get(DcMotor.class, "right_rear");
         yeeter = hardwareMap.get(DcMotor.class, "yeeter");
         armMotor = hardwareMap.get(DcMotor.class, "arm_motor");
-        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
-        leftRear.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightRear.setDirection(DcMotorSimple.Direction.REVERSE);
         yeeter.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        armMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         leftFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         leftRear.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -75,7 +77,7 @@ public class TeleOP extends LinearOpMode {
         telemetry.update();
         int currLiftPos = armMotor.getCurrentPosition();
         int[] pos = {currLiftPos, 400, 1100, 1800, 2500, 3200, 3800, 1499, 1699};
-        armServo.setPosition(.5);
+        armServo.setPosition(.15);
         Double c = capstone.getPosition();
         //armServo.setPosition(0);
         runtime.reset();
@@ -86,13 +88,13 @@ public class TeleOP extends LinearOpMode {
 
         while (opModeIsActive()) {
 
-            if (gamepad1.left_bumper)
+            if (gamepad2.left_bumper)
             {
 
                 capstone.setPosition(0);
 
             }
-            if (gamepad1.right_bumper)
+            if (gamepad2.right_bumper)
             {
 
                 capstone.setPosition(.3);
@@ -102,14 +104,12 @@ public class TeleOP extends LinearOpMode {
             {
                 foundationDown();
             }
-            if(gamepad2.right_bumper)
+            if(gamepad1.right_bumper)
             {
                 foundationUP();
             }
             if(gamepad1.right_trigger!=0){
                 yeeter.setPower(-gamepad1.right_trigger);
-                telemetry.addData("yeeter:", "reverse");
-                telemetry.update();
 
             } else if(gamepad1.left_trigger!=0){
                 yeeter.setPower(gamepad1.left_trigger);
@@ -134,16 +134,17 @@ public class TeleOP extends LinearOpMode {
                 armMotor.setPower(-gamepad2.left_stick_y);
             }
             if(gamepad2.x && !buttonPrev){
-                if(armServo.getPosition() == .5)
+                if(armServo.getPosition() == 0.1)
                 {
-                    armServo.setPosition(.8);
+                    armServo.setPosition(.4);
                 }
                 else
                 {
-                    armServo.setPosition(.5);
+                    armServo.setPosition(.1);
                 }
             }
             buttonPrev = gamepad2.x;
+
 
             double r = Math.hypot(-gamepad1.left_stick_x, gamepad1.left_stick_y);
             double robotAngle = Math.atan2(gamepad1.left_stick_y, -gamepad1.left_stick_x) - Math.PI / 4;
@@ -166,12 +167,13 @@ public class TeleOP extends LinearOpMode {
     }
     public  void foundationUP()
     {
-        foundL.setPosition(.75);
-        foundR.setPosition(.75);
+        foundL.setPosition(.6);
+        foundR.setPosition(.2);
     }
     public  void foundationDown()
     {
-        foundL.setPosition(1);
-        foundR.setPosition(1);
+        foundL.setPosition(.15);
+        foundR.setPosition(.65);
     }
+
 }

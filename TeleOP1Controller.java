@@ -24,9 +24,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name= "TeleOP", group="Linear Opmode")
+@TeleOp(name= "TeleOP1 controller", group="Linear Opmode")
 //@Disabled
-public class TeleOP extends LinearOpMode {
+public class TeleOP1Controller extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
@@ -50,7 +50,11 @@ public class TeleOP extends LinearOpMode {
         rightFront = hardwareMap.get(DcMotor.class, "right_front");
         leftRear  = hardwareMap.get(DcMotor.class, "left_rear");
         rightRear = hardwareMap.get(DcMotor.class, "right_rear");
-
+        yeeter = hardwareMap.get(DcMotor.class, "yeeter");
+        armMotor = hardwareMap.get(DcMotor.class, "arm_motor");
+        rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightRear.setDirection(DcMotorSimple.Direction.REVERSE);
+        yeeter.setDirection(DcMotorSimple.Direction.REVERSE);
 
         armMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         leftFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -67,11 +71,6 @@ public class TeleOP extends LinearOpMode {
         foundL = hardwareMap.get(Servo.class, "fl");
         foundR = hardwareMap.get(Servo.class, "fr");
         sensorRange = hardwareMap.get(DistanceSensor.class, "sensor_range");
-        yeeter = hardwareMap.get(DcMotor.class, "yeeter");
-        armMotor = hardwareMap.get(DcMotor.class, "arm_motor");
-        rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
-        rightRear.setDirection(DcMotorSimple.Direction.REVERSE);
-        yeeter.setDirection(DcMotorSimple.Direction.REVERSE);
 
         armMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         boolean armM = false;
@@ -95,13 +94,13 @@ public class TeleOP extends LinearOpMode {
         boolean buttonPrev = false;
         while (opModeIsActive()) {
 
-            if (gamepad2.left_bumper)
+            if (gamepad1.dpad_up)
             {
 
                 capstone.setPosition(0.07);
 
             }
-            if (gamepad2.right_bumper)
+            if (gamepad2.dpad_down)
             {
 
                 capstone.setPosition(.33);
@@ -116,47 +115,40 @@ public class TeleOP extends LinearOpMode {
                 foundationUP();
             }
             if(gamepad1.right_trigger!=0){
-                yeeter.setPower(-gamepad1.right_trigger);
-
-            } else if(gamepad1.left_trigger!=0){
                 yeeter.setPower(gamepad1.left_trigger);
-                telemetry.addData("yeeter:", "forward");
-                telemetry.update();
             }else{
                 yeeter.setPower(0);
-                telemetry.addData("yeeter:", "stop");
-                telemetry.update();
             }
-            if(gamepad2.left_stick_y == 0)
+            if(gamepad1.right_stick_y == 0)
             {
 
                 armMotor.setPower(0);
             }
-            if(armMotor.getCurrentPosition() < (pos[0] + 10) && -gamepad2.left_stick_y < 0)
+            if(armMotor.getCurrentPosition() < (pos[0] + 10) && -gamepad1.right_stick_y < 0)
             {
                 armMotor.setPower(0);
             }
             else
             {
-                armMotor.setPower(-gamepad2.left_stick_y);
+                armMotor.setPower(-gamepad1.right_stick_y);
             }
-            if (gamepad2.x)
+            if (gamepad1.x)
             {
                 telemetry.addData("boolean", buttonPrev);
                 telemetry.addData("pos", armServo.getPosition());
                 telemetry.update();
             }
-            if(gamepad2.x){
+            if(gamepad1.x){
                 armServo.setPosition(.3);
             }
-            if (gamepad2.a)
+            if (gamepad1.a)
             {
                 armServo.setPosition(.56);
             }
-            if (gamepad2.left_trigger != 0)
+            if (gamepad1.left_trigger != 0)
             {
-                x = 1;
-                if (sensorRange.getDistance(DistanceUnit.INCH) < 3.0 )
+                x = .7;
+                if (sensorRange.getDistance(DistanceUnit.INCH) < 2.0 )
                     armServo.setPosition((.58));
             }
             else
